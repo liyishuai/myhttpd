@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
+		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,10 @@
 /* Begin PBXFileReference section */
 		21B2E6421E1CA7BF008B161A /* myhttpd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = myhttpd; sourceTree = BUILT_PRODUCTS_DIR; };
 		21B2E6451E1CA7BF008B161A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		21B2E64D1E1CA835008B161A /* internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = internal.h; path = includes/internal.h; sourceTree = "<group>"; };
+		21B2E6511E1CA9D9008B161A /* daemon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = daemon.c; sourceTree = "<group>"; };
+		21B2E6531E1CA9F9008B161A /* httpd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = httpd.h; sourceTree = "<group>"; };
+		21B2E6541E1CACF6008B161A /* configurations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = configurations.h; path = includes/configurations.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +46,7 @@
 		21B2E6391E1CA7BF008B161A = {
 			isa = PBXGroup;
 			children = (
+				21B2E64C1E1CA811008B161A /* includes */,
 				21B2E6441E1CA7BF008B161A /* myhttpd */,
 				21B2E6431E1CA7BF008B161A /* Products */,
 			);
@@ -58,8 +64,19 @@
 			isa = PBXGroup;
 			children = (
 				21B2E6451E1CA7BF008B161A /* main.c */,
+				21B2E6511E1CA9D9008B161A /* daemon.c */,
 			);
 			path = myhttpd;
+			sourceTree = "<group>";
+		};
+		21B2E64C1E1CA811008B161A /* includes */ = {
+			isa = PBXGroup;
+			children = (
+				21B2E64D1E1CA835008B161A /* internal.h */,
+				21B2E6531E1CA9F9008B161A /* httpd.h */,
+				21B2E6541E1CACF6008B161A /* configurations.h */,
+			);
+			name = includes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -216,6 +234,7 @@
 		21B2E64A1E1CA7BF008B161A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -223,6 +242,7 @@
 		21B2E64B1E1CA7BF008B161A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
