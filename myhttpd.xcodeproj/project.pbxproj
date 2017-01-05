@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		21716EDC1E1DE51500B7A418 /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 21716EDA1E1DE51500B7A418 /* connection.c */; };
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		21716EDA1E1DE51500B7A418 /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = connection.c; sourceTree = "<group>"; };
+		21716EDB1E1DE51500B7A418 /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
 		21B2E6421E1CA7BF008B161A /* myhttpd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = myhttpd; sourceTree = BUILT_PRODUCTS_DIR; };
 		21B2E6451E1CA7BF008B161A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		21B2E64D1E1CA835008B161A /* internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = internal.h; path = includes/internal.h; sourceTree = "<group>"; };
@@ -65,6 +68,8 @@
 			children = (
 				21B2E6451E1CA7BF008B161A /* main.c */,
 				21B2E6511E1CA9D9008B161A /* daemon.c */,
+				21716EDA1E1DE51500B7A418 /* connection.c */,
+				21716EDB1E1DE51500B7A418 /* connection.h */,
 			);
 			path = myhttpd;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
+				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,6 +272,7 @@
 				21B2E64B1E1CA7BF008B161A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

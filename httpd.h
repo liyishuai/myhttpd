@@ -17,6 +17,8 @@ struct httpd_connection;
 
 struct httpd_daemon;
 
+struct httpd_response;
+
 typedef int httpd_socket;
 
 typedef int httpd_status;
