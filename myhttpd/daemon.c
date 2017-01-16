@@ -15,9 +15,12 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <errno.h>
+#include <limits.h>
 #include "httpd.h"
 #include "internal.h"
 #include "connection.h"
+
+#define HTTPD_POOL_SIZE_DEFAULT (32 * 1024)
 
 #ifdef DEBUG
 void httpd_log(char* c) {
@@ -62,6 +65,45 @@ static httpd_status make_nonblocking(httpd_socket socket) {
 static void make_nonblocking_noninheritable(httpd_socket socket) {
     make_nonblocking(socket);
     make_noninheritable(socket);
+}
+
+static ssize_t recv_param_adapter(struct httpd_connection* conn,
+                                  void* other, size_t i) {
+    ssize_t ret;
+    
+    if (INVALID_SOCKET == conn->socket ||
+        HTTPD_CONNECTION_CLOSED == conn->state) {
+        errno = ENOTCONN;
+        return -1;
+    }
+    if (i > SSIZE_MAX)
+        i = SSIZE_MAX;
+    
+    ret = recv(conn->socket, other, i, 0);
+    
+    return ret;
+}
+
+static ssize_t send_param_adapter(struct httpd_connection* conn,
+                                  const void* other, size_t i) {
+    ssize_t ret;
+    
+    if (INVALID_SOCKET == conn->socket ||
+        HTTPD_CONNECTION_CLOSED == conn->state) {
+        errno = ENOTCONN;
+        return -1;
+    }
+    if (i > SSIZE_MAX)
+        i = SSIZE_MAX;
+    
+    ret = send(conn->socket, other, i, 0);
+    
+    /* Handle broken kernel / libc, returning -1 but not setting errno;
+     kill connection as that should be safe; reported on mailinglist here:
+     http://lists.gnu.org/archive/html/libmicrohttpd/2014-10/msg00023.html */
+    if ( (0 > ret) && (0 == errno))
+        errno = ECONNRESET;
+    return ret;
 }
 
 typedef void* (*ThreadStartRoutine) (void* cls);
@@ -178,7 +220,12 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     }
     memset(connection, 0, sizeof(struct httpd_connection));
     
-    // TODO: connection pool
+    connection->pool = httpd_pool_create(daemon->pool_size);
+    if (NULL == connection->pool) {
+        close(client_socket);
+        errno = ENOMEM;
+        return HTTPD_NO;
+    }
     
     // TODO: connection timeout
     
@@ -190,6 +237,9 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     connection->read_handler = &httpd_connection_handle_read;
     connection->write_handler = &httpd_connection_handle_write;
     connection->idle_handler = &httpd_connection_handle_idle;
+    connection->recv_cls = &recv_param_adapter;
+    connection->send_cls = &send_param_adapter;
+
     
     connection->next = daemon->connections_head;
     connection->prev = NULL;
@@ -262,7 +312,6 @@ static httpd_status call_handlers(struct httpd_connection* conn,
 }
 
 static httpd_status httpd_cleanup_connections(struct httpd_daemon* daemon) {
-    // TODO: everything
     return HTTPD_YES;
 }
 
@@ -396,6 +445,7 @@ struct httpd_daemon* create_daemon(uint16_t port) {
     memset(daemon, 0, sizeof(struct httpd_daemon));
     daemon->socket = INVALID_SOCKET;
     daemon->shutdown = HTTPD_NO;
+    daemon->pool_size = HTTPD_POOL_SIZE_DEFAULT;
 
     /* create a socket */
     socket_fd = create_listen_socket(daemon);

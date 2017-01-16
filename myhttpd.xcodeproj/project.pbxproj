@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		210AFA371E2D57CF009F105C /* memorypool.c in Sources */ = {isa = PBXBuildFile; fileRef = 210AFA351E2D57CF009F105C /* memorypool.c */; };
 		21716EDC1E1DE51500B7A418 /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 21716EDA1E1DE51500B7A418 /* connection.c */; };
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		210AFA351E2D57CF009F105C /* memorypool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memorypool.c; sourceTree = "<group>"; };
+		210AFA361E2D57CF009F105C /* memorypool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memorypool.h; path = myhttpd/memorypool.h; sourceTree = "<group>"; };
 		21716EDA1E1DE51500B7A418 /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = connection.c; sourceTree = "<group>"; };
 		21716EDB1E1DE51500B7A418 /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
 		21B2E6421E1CA7BF008B161A /* myhttpd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = myhttpd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,6 +73,7 @@
 				21B2E6511E1CA9D9008B161A /* daemon.c */,
 				21716EDA1E1DE51500B7A418 /* connection.c */,
 				21716EDB1E1DE51500B7A418 /* connection.h */,
+				210AFA351E2D57CF009F105C /* memorypool.c */,
 			);
 			path = myhttpd;
 			sourceTree = "<group>";
@@ -80,6 +84,7 @@
 				21B2E64D1E1CA835008B161A /* internal.h */,
 				21B2E6531E1CA9F9008B161A /* httpd.h */,
 				21B2E6541E1CACF6008B161A /* configurations.h */,
+				210AFA361E2D57CF009F105C /* memorypool.h */,
 			);
 			name = includes;
 			sourceTree = "<group>";
@@ -141,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				210AFA371E2D57CF009F105C /* memorypool.c in Sources */,
 				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
 				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
