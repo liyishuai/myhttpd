@@ -10,6 +10,7 @@
 		21716EDC1E1DE51500B7A418 /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 21716EDA1E1DE51500B7A418 /* connection.c */; };
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
+		9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9144C1FC1E31D0BE00B41575 /* ipc.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +34,9 @@
 		21B2E6511E1CA9D9008B161A /* daemon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = daemon.c; sourceTree = "<group>"; };
 		21B2E6531E1CA9F9008B161A /* httpd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = httpd.h; sourceTree = "<group>"; };
 		21B2E6541E1CACF6008B161A /* configurations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = configurations.h; path = includes/configurations.h; sourceTree = "<group>"; };
+		91301F211E330BF300B6B306 /* ipc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipc.h; path = includes/ipc.h; sourceTree = "<group>"; };
+		91301F221E330BF300B6B306 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = includes/types.h; sourceTree = "<group>"; };
+		9144C1FC1E31D0BE00B41575 /* ipc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipc.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +74,7 @@
 				21B2E6511E1CA9D9008B161A /* daemon.c */,
 				21716EDA1E1DE51500B7A418 /* connection.c */,
 				21716EDB1E1DE51500B7A418 /* connection.h */,
+				9144C1FC1E31D0BE00B41575 /* ipc.c */,
 			);
 			path = myhttpd;
 			sourceTree = "<group>";
@@ -77,6 +82,8 @@
 		21B2E64C1E1CA811008B161A /* includes */ = {
 			isa = PBXGroup;
 			children = (
+				91301F211E330BF300B6B306 /* ipc.h */,
+				91301F221E330BF300B6B306 /* types.h */,
 				21B2E64D1E1CA835008B161A /* internal.h */,
 				21B2E6531E1CA9F9008B161A /* httpd.h */,
 				21B2E6541E1CACF6008B161A /* configurations.h */,
@@ -143,6 +150,7 @@
 			files = (
 				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
 				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
+				9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
