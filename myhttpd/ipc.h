@@ -17,4 +17,7 @@ int listen(int, int);
 int setsockopt(int, int, int, const void *, socklen_t);
 int socket(int, int, int);
 
+void* ipc_init(const char *);
+void ipc_close();
+
 #endif /* ipc_h */

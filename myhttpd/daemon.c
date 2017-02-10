@@ -18,6 +18,7 @@
 #include "httpd.h"
 #include "internal.h"
 #include "connection.h"
+#include "ipc.h"
 
 #ifdef DEBUG
 void httpd_log(char* c) {
@@ -382,6 +383,8 @@ httpd_socket create_listen_socket(struct httpd_daemon* daemon) {
     return fd;
 }
 
+const char *ipcd_name = "ipcd";
+
 struct httpd_daemon* create_daemon(uint16_t port) {
 
     struct httpd_daemon* daemon;
@@ -396,6 +399,15 @@ struct httpd_daemon* create_daemon(uint16_t port) {
     memset(daemon, 0, sizeof(struct httpd_daemon));
     daemon->socket = INVALID_SOCKET;
     daemon->shutdown = HTTPD_NO;
+
+    /* initialize ipc */
+    if (!ipc_init(ipcd_name))
+    {
+#ifdef DEBUG
+        httpd_log("Failed to initialize IPC.");
+#endif
+        goto free_and_fail;
+    }
 
     /* create a socket */
     socket_fd = create_listen_socket(daemon);
@@ -433,5 +445,6 @@ struct httpd_daemon* create_daemon(uint16_t port) {
     
 free_and_fail:
     free(daemon);
+    ipc_close();
     return NULL;
 }

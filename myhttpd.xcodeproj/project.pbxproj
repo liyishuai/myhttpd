@@ -11,10 +11,21 @@
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
 		9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9144C1FC1E31D0BE00B41575 /* ipc.c */; };
+		91D084E81E4D2E4C00B1DE41 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 91D084E71E4D2E4C00B1DE41 /* main.c */; };
+		91D084EE1E4D30FF00B1DE41 /* ipcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 91D084EC1E4D30FF00B1DE41 /* ipcd.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		21B2E6401E1CA7BF008B161A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		91D084E31E4D2E4C00B1DE41 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -34,13 +45,24 @@
 		21B2E6511E1CA9D9008B161A /* daemon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = daemon.c; sourceTree = "<group>"; };
 		21B2E6531E1CA9F9008B161A /* httpd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = httpd.h; sourceTree = "<group>"; };
 		21B2E6541E1CACF6008B161A /* configurations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = configurations.h; path = includes/configurations.h; sourceTree = "<group>"; };
-		91301F211E330BF300B6B306 /* ipc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipc.h; path = includes/ipc.h; sourceTree = "<group>"; };
 		91301F221E330BF300B6B306 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = includes/types.h; sourceTree = "<group>"; };
 		9144C1FC1E31D0BE00B41575 /* ipc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipc.c; sourceTree = "<group>"; };
+		914986571E4D3A27000429E8 /* ipc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipc.h; path = myhttpd/ipc.h; sourceTree = SOURCE_ROOT; };
+		91D084E51E4D2E4C00B1DE41 /* ipcd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ipcd; sourceTree = BUILT_PRODUCTS_DIR; };
+		91D084E71E4D2E4C00B1DE41 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		91D084EC1E4D30FF00B1DE41 /* ipcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipcd.c; sourceTree = "<group>"; };
+		91D084ED1E4D30FF00B1DE41 /* ipcd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ipcd.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		21B2E63F1E1CA7BF008B161A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91D084E21E4D2E4C00B1DE41 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -55,6 +77,7 @@
 			children = (
 				21B2E64C1E1CA811008B161A /* includes */,
 				21B2E6441E1CA7BF008B161A /* myhttpd */,
+				91D084E61E4D2E4C00B1DE41 /* ipcd */,
 				21B2E6431E1CA7BF008B161A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -63,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				21B2E6421E1CA7BF008B161A /* myhttpd */,
+				91D084E51E4D2E4C00B1DE41 /* ipcd */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +94,7 @@
 		21B2E6441E1CA7BF008B161A /* myhttpd */ = {
 			isa = PBXGroup;
 			children = (
+				914986571E4D3A27000429E8 /* ipc.h */,
 				21B2E6451E1CA7BF008B161A /* main.c */,
 				21B2E6511E1CA9D9008B161A /* daemon.c */,
 				21716EDA1E1DE51500B7A418 /* connection.c */,
@@ -82,13 +107,22 @@
 		21B2E64C1E1CA811008B161A /* includes */ = {
 			isa = PBXGroup;
 			children = (
-				91301F211E330BF300B6B306 /* ipc.h */,
 				91301F221E330BF300B6B306 /* types.h */,
 				21B2E64D1E1CA835008B161A /* internal.h */,
 				21B2E6531E1CA9F9008B161A /* httpd.h */,
 				21B2E6541E1CACF6008B161A /* configurations.h */,
 			);
 			name = includes;
+			sourceTree = "<group>";
+		};
+		91D084E61E4D2E4C00B1DE41 /* ipcd */ = {
+			isa = PBXGroup;
+			children = (
+				91D084E71E4D2E4C00B1DE41 /* main.c */,
+				91D084EC1E4D30FF00B1DE41 /* ipcd.c */,
+				91D084ED1E4D30FF00B1DE41 /* ipcd.h */,
+			);
+			path = ipcd;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -111,6 +145,23 @@
 			productReference = 21B2E6421E1CA7BF008B161A /* myhttpd */;
 			productType = "com.apple.product-type.tool";
 		};
+		91D084E41E4D2E4C00B1DE41 /* ipcd */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91D084EB1E4D2E4C00B1DE41 /* Build configuration list for PBXNativeTarget "ipcd" */;
+			buildPhases = (
+				91D084E11E4D2E4C00B1DE41 /* Sources */,
+				91D084E21E4D2E4C00B1DE41 /* Frameworks */,
+				91D084E31E4D2E4C00B1DE41 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ipcd;
+			productName = ipcd;
+			productReference = 91D084E51E4D2E4C00B1DE41 /* ipcd */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -122,6 +173,10 @@
 				TargetAttributes = {
 					21B2E6411E1CA7BF008B161A = {
 						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+					91D084E41E4D2E4C00B1DE41 = {
+						CreatedOnToolsVersion = 8.2;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -139,6 +194,7 @@
 			projectRoot = "";
 			targets = (
 				21B2E6411E1CA7BF008B161A /* myhttpd */,
+				91D084E41E4D2E4C00B1DE41 /* ipcd */,
 			);
 		};
 /* End PBXProject section */
@@ -152,6 +208,15 @@
 				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
 				9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91D084E11E4D2E4C00B1DE41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91D084E81E4D2E4C00B1DE41 /* main.c in Sources */,
+				91D084EE1E4D30FF00B1DE41 /* ipcd.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,6 +326,20 @@
 			};
 			name = Release;
 		};
+		91D084E91E4D2E4C00B1DE41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		91D084EA1E4D2E4C00B1DE41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -278,6 +357,15 @@
 			buildConfigurations = (
 				21B2E64A1E1CA7BF008B161A /* Debug */,
 				21B2E64B1E1CA7BF008B161A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		91D084EB1E4D2E4C00B1DE41 /* Build configuration list for PBXNativeTarget "ipcd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91D084E91E4D2E4C00B1DE41 /* Debug */,
+				91D084EA1E4D2E4C00B1DE41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
