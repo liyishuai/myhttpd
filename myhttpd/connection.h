@@ -11,8 +11,8 @@
 
 #include "httpd.h"
 
-int httpd_connection_handle_read(struct httpd_connection conn);
-int httpd_connection_handle_write(struct httpd_connection conn);
-int httpd_connection_handle_idle(struct httpd_connection conn);
+httpd_status httpd_connection_handle_read(struct httpd_connection* conn);
+httpd_status httpd_connection_handle_write(struct httpd_connection* conn);
+httpd_status httpd_connection_handle_idle(struct httpd_connection* conn);
 
 #endif /* connection_h */
