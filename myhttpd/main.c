@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "httpd.h"
+#include "ipc.h"
 
 #define PAGE "<html><head><title>DeepSpec Web Server</title></head><body>Hello DeepSpec!</body></html>"
 

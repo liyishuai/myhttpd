@@ -35,7 +35,6 @@ void ipc_test()
 
 error:
     ipc_close();
-    puts("IPC test failed.");
 }
 
 #endif

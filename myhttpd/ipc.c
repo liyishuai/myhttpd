@@ -32,11 +32,11 @@ void* ipc_init(const char *name)
     printf("daemon pid: ");
     scanf("%d", &daemon_pid);
 
-    // sigemptyset(&mask);
-    // sigaddset(&mask, SIGUSR1);
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGUSR1);
     sigfillset(&mask);
 
-    ipc_fd = shm_open(name, O_RDWR);
+    ipc_fd = shm_open(name, O_RDWR, S_IRWXU);
     if (ipc_fd == -1)
     {
         fputs(strerror(errno), stderr);
@@ -57,8 +57,9 @@ error:
 
 ret_t call(opcode op, args_t args)
 {
-    ipc_mem->op = ACCEPT;
+    ipc_mem->op = op;
     ipc_mem->args = args;
+    ipc_mem->ret.test_ret = 23333;
     kill(daemon_pid, SIGUSR1);
     int sig;
     int errnum = sigwait(&mask, &sig);

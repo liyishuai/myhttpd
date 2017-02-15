@@ -22,6 +22,7 @@ pid_t client_pid;
 
 void respond()
 {
+    printf("respond %d\n", ipcd_mem->op);
     switch (ipcd_mem->op) {
         case ACCEPT:
             ipcd_mem->ret.accept_ret =
@@ -30,6 +31,10 @@ void respond()
                    ipcd_mem->args.accept_args.address_len);
             break;
         case BIND:
+            printf("BIND\t%d\t%p\t%d\n",
+                   ipcd_mem->args.bind_args.socket,
+                   ipcd_mem->args.bind_args.address,
+                   ipcd_mem->args.bind_args.address_len);
             ipcd_mem->ret.bind_ret =
             bind(ipcd_mem->args.bind_args.socket,
                  ipcd_mem->args.bind_args.address,
@@ -49,10 +54,14 @@ void respond()
                        ipcd_mem->args.setsockopt_args.option_len);
             break;
         case SOCKET:
+            printf("SOCKET\t%d\t%d\t%d\n",
+                   ipcd_mem->args.socket_args.domain,
+                   ipcd_mem->args.socket_args.type,
+                   ipcd_mem->args.socket_args.protocol);
             ipcd_mem->ret.socket_ret =
             socket(ipcd_mem->args.socket_args.domain,
-                   ipcd_mem->args.socket_args.protocol,
-                   ipcd_mem->args.socket_args.type);
+                   ipcd_mem->args.socket_args.type,
+                   ipcd_mem->args.socket_args.protocol);
             break;
 #ifdef DEBUG
         case TEST:
@@ -61,10 +70,12 @@ void respond()
                    ipcd_mem->args.test_args.b);
             ipcd_mem->ret.test_ret =
             ipcd_mem->args.test_args.a + ipcd_mem->args.test_args.b;
+            break;
 #endif
         default:
             return;
     }
+    printf("return %d\n", ipcd_mem->ret.accept_ret);
     kill(client_pid, SIGUSR1);
 }
 
@@ -77,7 +88,7 @@ void ipcd_close(const char *name)
 
 void* ipcd_init(const char *name)
 {
-    ipcd_fd = shm_open(name, O_RDWR | O_CREAT);
+    ipcd_fd = shm_open(name, O_RDWR | O_CREAT, S_IRWXU);
     if (ipcd_fd == -1)
     {
         fputs(strerror(errno), stderr);
@@ -96,8 +107,8 @@ void* ipcd_init(const char *name)
     }
 
     sigset_t mask;
-    // sigemptyset(&mask);
-    // sigaddset(&mask, SIGUSR1);
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGUSR1);
     sigfillset(&mask);
     struct sigaction action;
     action.sa_handler = respond;

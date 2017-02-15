@@ -465,14 +465,16 @@ struct httpd_daemon* create_daemon(uint16_t port,
     daemon->default_handler = dh;
     daemon->default_handler_cls = dh_cls;
 
+#ifdef ipc_h
     /* initialize ipc */
     if (!ipc_init(ipcd_name))
     {
 #ifdef DEBUG
         httpd_log("Failed to initialize IPC.");
-#endif
+#endif /* DEBUG */
         goto free_and_fail;
     }
+#endif /* ipc_h */
 
     /* create a socket */
     socket_fd = create_listen_socket(daemon);
@@ -510,7 +512,9 @@ struct httpd_daemon* create_daemon(uint16_t port,
     
 free_and_fail:
     free(daemon);
+#ifdef ipc_h
     ipc_close();
+#endif
     return NULL;
 }
 
@@ -527,4 +531,7 @@ void stop_daemon(struct httpd_daemon* daemon) {
     pthread_join(daemon->pid, NULL);
     // TODO: close all connections
     free(daemon);
+#ifdef ipc_h
+    ipc_close();
+#endif
 }

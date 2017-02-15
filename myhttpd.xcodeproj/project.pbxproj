@@ -13,10 +13,11 @@
 		21716EDC1E1DE51500B7A418 /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 21716EDA1E1DE51500B7A418 /* connection.c */; };
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
+		21D202D81E4268AA00459E12 /* httpd_string.c in Sources */ = {isa = PBXBuildFile; fileRef = 21D202D61E4268AA00459E12 /* httpd_string.c */; };
 		9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9144C1FC1E31D0BE00B41575 /* ipc.c */; };
+		91C6A1691E5414C700280CFA /* ipc_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 91C6A1681E5414C700280CFA /* ipc_test.c */; };
 		91D084E81E4D2E4C00B1DE41 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 91D084E71E4D2E4C00B1DE41 /* main.c */; };
 		91D084EE1E4D30FF00B1DE41 /* ipcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 91D084EC1E4D30FF00B1DE41 /* ipcd.c */; };
-		21D202D81E4268AA00459E12 /* httpd_string.c in Sources */ = {isa = PBXBuildFile; fileRef = 21D202D61E4268AA00459E12 /* httpd_string.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,15 +56,16 @@
 		21B2E6511E1CA9D9008B161A /* daemon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = daemon.c; sourceTree = "<group>"; };
 		21B2E6531E1CA9F9008B161A /* httpd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = httpd.h; sourceTree = "<group>"; };
 		21B2E6541E1CACF6008B161A /* configurations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = configurations.h; path = includes/configurations.h; sourceTree = "<group>"; };
+		21D202D61E4268AA00459E12 /* httpd_string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = httpd_string.c; sourceTree = "<group>"; };
+		21D202D71E4268AA00459E12 /* httpd_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = httpd_string.h; path = myhttpd/httpd_string.h; sourceTree = "<group>"; };
 		91301F221E330BF300B6B306 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = includes/types.h; sourceTree = "<group>"; };
 		9144C1FC1E31D0BE00B41575 /* ipc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipc.c; sourceTree = "<group>"; };
 		914986571E4D3A27000429E8 /* ipc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipc.h; path = myhttpd/ipc.h; sourceTree = SOURCE_ROOT; };
+		91C6A1681E5414C700280CFA /* ipc_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipc_test.c; sourceTree = "<group>"; };
 		91D084E51E4D2E4C00B1DE41 /* ipcd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ipcd; sourceTree = BUILT_PRODUCTS_DIR; };
 		91D084E71E4D2E4C00B1DE41 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		91D084EC1E4D30FF00B1DE41 /* ipcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ipcd.c; sourceTree = "<group>"; };
 		91D084ED1E4D30FF00B1DE41 /* ipcd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ipcd.h; sourceTree = "<group>"; };
-		21D202D61E4268AA00459E12 /* httpd_string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = httpd_string.c; sourceTree = "<group>"; };
-		21D202D71E4268AA00459E12 /* httpd_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = httpd_string.h; path = myhttpd/httpd_string.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 		21B2E6441E1CA7BF008B161A /* myhttpd */ = {
 			isa = PBXGroup;
 			children = (
+				91C6A1681E5414C700280CFA /* ipc_test.c */,
 				914986571E4D3A27000429E8 /* ipc.h */,
 				21B2E6451E1CA7BF008B161A /* main.c */,
 				21B2E6511E1CA9D9008B161A /* daemon.c */,
@@ -227,6 +230,7 @@
 				210AFA371E2D57CF009F105C /* memorypool.c in Sources */,
 				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
 				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
+				91C6A1691E5414C700280CFA /* ipc_test.c in Sources */,
 				9144C1FE1E31D0BE00B41575 /* ipc.c in Sources */,
 				215CD65D1E4F6A5500396D43 /* reason_phrase.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
