@@ -9,11 +9,16 @@
 #ifndef internal_h
 #define internal_h
 
-#define HTTPD_YES 0
-#define HTTPD_NO -1
+
+#define HTTPD_BUF_INC_SIZE 1024
+#define HTTPD_POOL_SIZE_DEFAULT (32 * 1024)
 
 #include "httpd.h"
 #include "memorypool.h"
+
+#define MAX(a,b) (((a)<(b)) ? (b) : (a))
+#define MIN(a,b) (((a)<(b)) ? (a) : (b))
+
 
 typedef pthread_t httpd_thread_handle;
 
@@ -22,9 +27,6 @@ typedef ssize_t (*ReceiveCallback) (struct httpd_connection *conn,
 
 typedef ssize_t (*TransmitCallback) (struct httpd_connection *conn,
                                      const void *write_to, size_t max_bytes);
-
-typedef ssize_t (*ContentReaderCallback) (void *cls, uint64_t pos,
-                                          char *buf, size_t max);
 
 
 enum httpd_connectionEventLoopInfo {
@@ -213,6 +215,13 @@ struct httpd_connection {
     struct httpd_daemon* daemon;
     httpd_socket socket;
     
+    char* method;
+    char* version;
+    char* url;
+    
+    char* last;
+    char* colon;
+    
     struct httpd_response *response;
     
     int (*read_handler)(struct httpd_connection *conn);
@@ -244,6 +253,23 @@ struct httpd_connection {
     size_t write_buffer_append_offset;
     
     uint64_t response_write_position;
+    
+    struct httpd_HTTP_header *headers_received;
+    struct httpd_HTTP_header *headers_received_tail;
+    
+    uint64_t remaining_upload_size;
+    
+    httpd_status have_chunked_uploaded;    
+    size_t current_chunk_size;
+    size_t current_chunk_offset;
+    
+    httpd_status client_aware;
+    
+    void* client_context;
+    
+    size_t continue_message_write_offset;
+
+    unsigned int responseCode;
 };
 
 
@@ -255,6 +281,11 @@ struct httpd_response {
     size_t data_size;
     
     ContentReaderCallback crc;
+    void* crc_cls;
+    ContentReaderFreeCallback crfc;
+
+    
+    int fd;
 };
 
 struct httpd_daemon {
@@ -269,6 +300,10 @@ struct httpd_daemon {
     int at_limit;
     
     size_t pool_size;
+    size_t pool_increment;
+    
+    HTTPD_AccessHandlerCallback default_handler;
+    void *default_handler_cls;
 };
 
 

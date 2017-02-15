@@ -8,9 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		210AFA371E2D57CF009F105C /* memorypool.c in Sources */ = {isa = PBXBuildFile; fileRef = 210AFA351E2D57CF009F105C /* memorypool.c */; };
+		215CD65A1E4F57DD00396D43 /* response.c in Sources */ = {isa = PBXBuildFile; fileRef = 215CD6581E4F57DD00396D43 /* response.c */; };
+		215CD65D1E4F6A5500396D43 /* reason_phrase.c in Sources */ = {isa = PBXBuildFile; fileRef = 215CD65B1E4F6A5500396D43 /* reason_phrase.c */; };
 		21716EDC1E1DE51500B7A418 /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 21716EDA1E1DE51500B7A418 /* connection.c */; };
 		21B2E6461E1CA7BF008B161A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6451E1CA7BF008B161A /* main.c */; };
 		21B2E6521E1CA9D9008B161A /* daemon.c in Sources */ = {isa = PBXBuildFile; fileRef = 21B2E6511E1CA9D9008B161A /* daemon.c */; };
+		21D202D81E4268AA00459E12 /* httpd_string.c in Sources */ = {isa = PBXBuildFile; fileRef = 21D202D61E4268AA00459E12 /* httpd_string.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +31,10 @@
 /* Begin PBXFileReference section */
 		210AFA351E2D57CF009F105C /* memorypool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memorypool.c; sourceTree = "<group>"; };
 		210AFA361E2D57CF009F105C /* memorypool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memorypool.h; path = myhttpd/memorypool.h; sourceTree = "<group>"; };
+		215CD6581E4F57DD00396D43 /* response.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = response.c; sourceTree = "<group>"; };
+		215CD6591E4F57DD00396D43 /* response.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = response.h; path = myhttpd/response.h; sourceTree = "<group>"; };
+		215CD65B1E4F6A5500396D43 /* reason_phrase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = reason_phrase.c; sourceTree = "<group>"; };
+		215CD65C1E4F6A5500396D43 /* reason_phrase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = reason_phrase.h; path = myhttpd/reason_phrase.h; sourceTree = "<group>"; };
 		21716EDA1E1DE51500B7A418 /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = connection.c; sourceTree = "<group>"; };
 		21716EDB1E1DE51500B7A418 /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
 		21B2E6421E1CA7BF008B161A /* myhttpd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = myhttpd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,6 +43,8 @@
 		21B2E6511E1CA9D9008B161A /* daemon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = daemon.c; sourceTree = "<group>"; };
 		21B2E6531E1CA9F9008B161A /* httpd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = httpd.h; sourceTree = "<group>"; };
 		21B2E6541E1CACF6008B161A /* configurations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = configurations.h; path = includes/configurations.h; sourceTree = "<group>"; };
+		21D202D61E4268AA00459E12 /* httpd_string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = httpd_string.c; sourceTree = "<group>"; };
+		21D202D71E4268AA00459E12 /* httpd_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = httpd_string.h; path = myhttpd/httpd_string.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +83,9 @@
 				21716EDA1E1DE51500B7A418 /* connection.c */,
 				21716EDB1E1DE51500B7A418 /* connection.h */,
 				210AFA351E2D57CF009F105C /* memorypool.c */,
+				21D202D61E4268AA00459E12 /* httpd_string.c */,
+				215CD6581E4F57DD00396D43 /* response.c */,
+				215CD65B1E4F6A5500396D43 /* reason_phrase.c */,
 			);
 			path = myhttpd;
 			sourceTree = "<group>";
@@ -85,6 +97,9 @@
 				21B2E6531E1CA9F9008B161A /* httpd.h */,
 				21B2E6541E1CACF6008B161A /* configurations.h */,
 				210AFA361E2D57CF009F105C /* memorypool.h */,
+				21D202D71E4268AA00459E12 /* httpd_string.h */,
+				215CD6591E4F57DD00396D43 /* response.h */,
+				215CD65C1E4F6A5500396D43 /* reason_phrase.h */,
 			);
 			name = includes;
 			sourceTree = "<group>";
@@ -149,7 +164,10 @@
 				210AFA371E2D57CF009F105C /* memorypool.c in Sources */,
 				21B2E6521E1CA9D9008B161A /* daemon.c in Sources */,
 				21716EDC1E1DE51500B7A418 /* connection.c in Sources */,
+				215CD65D1E4F6A5500396D43 /* reason_phrase.c in Sources */,
 				21B2E6461E1CA7BF008B161A /* main.c in Sources */,
+				215CD65A1E4F57DD00396D43 /* response.c in Sources */,
+				21D202D81E4268AA00459E12 /* httpd_string.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

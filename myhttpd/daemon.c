@@ -20,7 +20,6 @@
 #include "internal.h"
 #include "connection.h"
 
-#define HTTPD_POOL_SIZE_DEFAULT (32 * 1024)
 
 #ifdef DEBUG
 void httpd_log(char* c) {
@@ -203,11 +202,13 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
         return HTTPD_NO;
     }
     
+    /*
     if (daemon->connections == daemon->connection_limit) {
         close(client_socket);
         errno = ENFILE;
         return HTTPD_NO;
     }
+     */
     
     setsockopt(client_socket, SOL_SOCKET, SO_NOSIGPIPE, &on, sizeof(on));
     
@@ -228,6 +229,15 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     }
     
     // TODO: connection timeout
+    
+    connection->addr = malloc(addrlen);
+    if (NULL == connection->addr) {
+        int eno = errno;
+        httpd_pool_destroy(connection->pool);
+        free(connection);
+        errno = eno;
+        return HTTPD_NO;
+    }
     
     memcpy(connection->addr, addr, addrlen);
     connection->addr_len = addrlen;
@@ -431,7 +441,9 @@ httpd_socket create_listen_socket(struct httpd_daemon* daemon) {
     return fd;
 }
 
-struct httpd_daemon* create_daemon(uint16_t port) {
+struct httpd_daemon* create_daemon(uint16_t port,
+                                   HTTPD_AccessHandlerCallback dh,
+                                   void* dh_cls) {
 
     struct httpd_daemon* daemon;
     httpd_socket socket_fd;
@@ -446,6 +458,9 @@ struct httpd_daemon* create_daemon(uint16_t port) {
     daemon->socket = INVALID_SOCKET;
     daemon->shutdown = HTTPD_NO;
     daemon->pool_size = HTTPD_POOL_SIZE_DEFAULT;
+    daemon->pool_increment = HTTPD_BUF_INC_SIZE;
+    daemon->default_handler = dh;
+    daemon->default_handler_cls = dh_cls;
 
     /* create a socket */
     socket_fd = create_listen_socket(daemon);
@@ -455,7 +470,7 @@ struct httpd_daemon* create_daemon(uint16_t port) {
     memset(&socket_addr, 0, sizeof(httpd_sockaddr));
     addr_len = sizeof(httpd_sockaddr);
     socket_addr.sin_family = AF_INET;
-    socket_addr.sin_port = port;
+    socket_addr.sin_port = htons(port);
     socket_addr.sin_len = addr_len;
     servaddr = (struct sockaddr*) &socket_addr;
     
@@ -484,4 +499,19 @@ struct httpd_daemon* create_daemon(uint16_t port) {
 free_and_fail:
     free(daemon);
     return NULL;
+}
+
+void stop_daemon(struct httpd_daemon* daemon) {
+    //int fd;
+    
+    if (NULL == daemon)
+        return;
+    
+    daemon->shutdown = HTTPD_YES;
+    //fd = daemon->socket;
+    daemon->socket = INVALID_SOCKET;
+    // TODO: worker pool?
+    pthread_join(daemon->pid, NULL);
+    // TODO: close all connections
+    free(daemon);
 }
