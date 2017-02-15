@@ -23,6 +23,9 @@ typedef enum {
     LISTEN,
     SETSOCKOPT,
     SOCKET
+#ifdef DEBUG
+    , TEST
+#endif
 } opcode;
 
 typedef struct {
@@ -56,11 +59,21 @@ typedef struct {
     int protocol;
 } socket_args_t;
 
+#ifdef DEBUG
+typedef struct {
+    int a;
+    int b;
+} test_args_t;
+#endif
+
 typedef int accept_ret_t;
 typedef int bind_ret_t;
 typedef int listen_ret_t;
 typedef int setsockopt_ret_t;
 typedef int socket_ret_t;
+#ifdef DEBUG
+typedef int test_ret_t;
+#endif
 
 typedef union {
     accept_args_t       accept_args;
@@ -68,6 +81,9 @@ typedef union {
     listen_args_t       listen_args;
     setsockopt_args_t   setsockopt_args;
     socket_args_t       socket_args;
+#ifdef DEBUG
+    test_args_t         test_args;
+#endif
 } args_t;
 
 typedef union {
@@ -76,6 +92,9 @@ typedef union {
     listen_ret_t        listen_ret;
     setsockopt_ret_t    setsockopt_ret;
     socket_ret_t        socket_ret;
+#ifdef DEBUG
+    test_ret_t          test_ret;
+#endif
 } ret_t;
 
 typedef struct {

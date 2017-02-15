@@ -17,49 +17,54 @@
 #include <sys/mman.h>
 
 int  ipcd_fd;
-void *ipcd_mem;
+msg_t *ipcd_mem;
 pid_t client_pid;
 
 void respond()
 {
-    msg_t msg;
-    memcpy(&msg, ipcd_mem, MSG_SIZE);
-    switch (msg.op) {
+    switch (ipcd_mem->op) {
         case ACCEPT:
-            msg.ret.accept_ret =
-            accept(msg.args.accept_args.socket,
-                   msg.args.accept_args.address,
-                   msg.args.accept_args.address_len);
+            ipcd_mem->ret.accept_ret =
+            accept(ipcd_mem->args.accept_args.socket,
+                   ipcd_mem->args.accept_args.address,
+                   ipcd_mem->args.accept_args.address_len);
             break;
         case BIND:
-            msg.ret.bind_ret =
-            bind(msg.args.bind_args.socket,
-                 msg.args.bind_args.address,
-                 msg.args.bind_args.address_len);
+            ipcd_mem->ret.bind_ret =
+            bind(ipcd_mem->args.bind_args.socket,
+                 ipcd_mem->args.bind_args.address,
+                 ipcd_mem->args.bind_args.address_len);
             break;
         case LISTEN:
-            msg.ret.listen_ret =
-            listen(msg.args.listen_args.socket,
-                   msg.args.listen_args.backlog);
+            ipcd_mem->ret.listen_ret =
+            listen(ipcd_mem->args.listen_args.socket,
+                   ipcd_mem->args.listen_args.backlog);
             break;
         case SETSOCKOPT:
-            msg.ret.setsockopt_ret =
-            setsockopt(msg.args.setsockopt_args.socket,
-                       msg.args.setsockopt_args.level,
-                       msg.args.setsockopt_args.option_name,
-                       msg.args.setsockopt_args.option_value,
-                       msg.args.setsockopt_args.option_len);
+            ipcd_mem->ret.setsockopt_ret =
+            setsockopt(ipcd_mem->args.setsockopt_args.socket,
+                       ipcd_mem->args.setsockopt_args.level,
+                       ipcd_mem->args.setsockopt_args.option_name,
+                       ipcd_mem->args.setsockopt_args.option_value,
+                       ipcd_mem->args.setsockopt_args.option_len);
             break;
         case SOCKET:
-            msg.ret.socket_ret =
-            socket(msg.args.socket_args.domain,
-                   msg.args.socket_args.protocol,
-                   msg.args.socket_args.type);
+            ipcd_mem->ret.socket_ret =
+            socket(ipcd_mem->args.socket_args.domain,
+                   ipcd_mem->args.socket_args.protocol,
+                   ipcd_mem->args.socket_args.type);
             break;
+#ifdef DEBUG
+        case TEST:
+            printf("TEST: %d + %d\n",
+                   ipcd_mem->args.test_args.a,
+                   ipcd_mem->args.test_args.b);
+            ipcd_mem->ret.test_ret =
+            ipcd_mem->args.test_args.a + ipcd_mem->args.test_args.b;
+#endif
         default:
             return;
     }
-    memcpy(ipcd_mem, &msg, MSG_SIZE);
     kill(client_pid, SIGUSR1);
 }
 
@@ -75,22 +80,24 @@ void* ipcd_init(const char *name)
     ipcd_fd = shm_open(name, O_RDWR | O_CREAT);
     if (ipcd_fd == -1)
     {
-        puts(strerror(errno));
+        fputs(strerror(errno), stderr);
         goto error;
     }
     if (ftruncate(ipcd_fd, MSG_SIZE))
     {
-        puts(strerror(errno));
+        fputs(strerror(errno), stderr);
         goto error;
     }
     ipcd_mem = mmap(0, MSG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, ipcd_fd, 0);
     if (ipcd_mem == MAP_FAILED)
     {
-        puts(strerror(errno));
+        fputs(strerror(errno), stderr);
         goto error;
     }
 
     sigset_t mask;
+    // sigemptyset(&mask);
+    // sigaddset(&mask, SIGUSR1);
     sigfillset(&mask);
     struct sigaction action;
     action.sa_handler = respond;
