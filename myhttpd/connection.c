@@ -29,7 +29,7 @@ static httpd_status try_grow_read_buffer(struct httpd_connection* conn) {
     size_t new_size;
     
     if (0 == conn->read_buffer_size)
-        new_size = conn->daemon->pool_size;
+        new_size = conn->daemon->pool_size / 2;
     else
         new_size = conn->read_buffer_size + HTTPD_BUF_INC_SIZE;
     buf = httpd_pool_reallocate(conn->pool, conn->read_buffer,
@@ -244,7 +244,7 @@ static void call_connection_handler(struct httpd_connection* conn) {
                                         conn->version,
                                         NULL, &processed,
                                         &conn->client_context);
-    if (HTTPD_NO != ret)
+    if (HTTPD_NO == ret)
         close_connection(conn);
 }
 
@@ -398,7 +398,7 @@ static httpd_status process_header_line(struct httpd_connection* conn,
                                         char* line) {
     char* colon;
     
-    colon = strchr(line, ';');
+    colon = strchr(line, ':');
     if (NULL == colon) {
         close_connection(conn);
         return HTTPD_NO;
@@ -673,7 +673,8 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
                                                                    HTTP_HEADER_CONNECTION);
             if (NULL != client_requested_close) {
                 r = HTTPD_str_equal_caseless_(client_requested_close, "close");
-                client_requested_close = NULL;
+                if (!r)
+                    client_requested_close = NULL;
             }
             
             /* now analyze chunked encoding situation */
@@ -859,6 +860,8 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
 
 static void cleanup_connection(struct httpd_connection* conn) {
     // TODO: everything!
+    close_connection(conn);
+    conn->in_idle = 0;
 }
 
 static httpd_status try_ready_normal_body(struct httpd_connection* conn) {
@@ -867,7 +870,7 @@ static httpd_status try_ready_normal_body(struct httpd_connection* conn) {
     
     response = conn->response;
     if (NULL == response->crc)
-        return HTTPD_NO;
+        return HTTPD_YES;
     if (0 == response->total_size ||
         conn->response_write_position == response->total_size)
         return HTTPD_YES; /* 0-byte response is always ready */
@@ -1077,7 +1080,7 @@ static void HTTPD_connection_update_event_loop_info(struct httpd_connection* con
                     // transmit_error_response
                     continue;
                 }
-                if (HTTPD_NO == conn->read_closed)
+                if (!conn->read_closed)
                     conn->event_loop_info = HTTPD_EVENT_LOOP_INFO_READ;
                 else
                     conn->event_loop_info = HTTPD_EVENT_LOOP_INFO_BLOCK;
@@ -1110,7 +1113,7 @@ static void HTTPD_connection_update_event_loop_info(struct httpd_connection* con
                     }
                 }
                 if ( (conn->read_buffer_offset < conn->read_buffer_size) &&
-                    (HTTPD_NO == conn->read_closed) )
+                    (!conn->read_closed) )
                     conn->event_loop_info = HTTPD_EVENT_LOOP_INFO_READ;
                 else
                     conn->event_loop_info = HTTPD_EVENT_LOOP_INFO_BLOCK;
@@ -1119,7 +1122,7 @@ static void HTTPD_connection_update_event_loop_info(struct httpd_connection* con
             case HTTPD_CONNECTION_FOOTER_PART_RECEIVED:
                 /* while reading footers, we always grow the
                  read buffer if needed, no size-check required */
-                if (HTTPD_YES == conn->read_closed)
+                if (conn->read_closed)
                 {
                     close_connection(conn);
                     continue;
@@ -1351,10 +1354,10 @@ httpd_status httpd_connection_handle_idle(struct httpd_connection* conn) {
                         conn->read_closed = 1;
                     }
                 }
-                if (0 == conn->remaining_upload_size) {
+                if (0 == conn->remaining_upload_size)
                     conn->state = HTTPD_CONNECTION_FOOTERS_RECEIVED;
+                else
                     conn->state = HTTPD_CONNECTION_CONTINUE_SENT;
-                }
             case HTTPD_CONNECTION_CONTINUE_SENDING:
                 if (strlen(HTTP_100_CONTINUE) == conn->continue_message_write_offset) {
                     conn->state = HTTPD_CONNECTION_CONTINUE_SENT;
@@ -1636,13 +1639,13 @@ httpd_status HTTPD_queue_response (struct httpd_connection *conn,
             if (ret) {
                 /* response was queued "early", refuse to read body / footers or
                  further requests! */
-                conn->read_closed = HTTPD_YES;
+                conn->read_closed = 1;
                 conn->state = HTTPD_CONNECTION_FOOTERS_RECEIVED;
             }
         }
     }
 
-    if (HTTPD_NO == conn->in_idle)
+    if (!conn->in_idle)
         (void) httpd_connection_handle_idle (conn);
     return HTTPD_YES;
 }

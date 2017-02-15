@@ -11,7 +11,7 @@
 #include <string.h>
 #include "httpd.h"
 
-#define PAGE "<html><head><title>libmicrohttpd demo</title></head><body>libmicrohttpd demo</body></html>"
+#define PAGE "<html><head><title>DeepSpec Web Server</title></head><body>Hello DeepSpec!</body></html>"
 
 static int ahc_echo (void *cls,
                      struct httpd_connection *connection,
