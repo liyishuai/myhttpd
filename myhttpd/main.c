@@ -37,7 +37,7 @@ static int ahc_echo (void *cls,
                                                   (void *) me,
                                                   HTTPD_RESPMEM_PERSISTENT);
     ret = HTTPD_queue_response (connection, HTTP_OK, response);
-    HTTPD_destroy_response (response);
+    //HTTPD_destroy_response (response);
     return ret;
 }
 
