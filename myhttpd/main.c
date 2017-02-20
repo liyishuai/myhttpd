@@ -6,6 +6,7 @@
 //  Copyright © 2017 DeepSpec. All rights reserved.
 //
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +54,7 @@ int main (int argc, char *const *argv) {
     d = create_daemon(atoi(argv[1]), &ahc_echo, PAGE);
     if (d == NULL)
         return 1;
-    (void) getc (stdin);
+    while (tolower(getchar()) != 'q');
     stop_daemon (d);
     return 0;
 }

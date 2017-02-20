@@ -22,39 +22,53 @@ pid_t client_pid;
 
 void respond()
 {
-    printf("respond %d\n", ipcd_mem->op);
     switch (ipcd_mem->op) {
         case ACCEPT:
+            printf("ACCEPT %d %d %d %s %d\n",
+                   ipcd_mem->args.accept_args.socket,
+                   ipcd_mem->args.accept_args.address.sa_len,
+                   ipcd_mem->args.accept_args.address.sa_family,
+                   ipcd_mem->args.accept_args.address.sa_data,
+                   ipcd_mem->args.accept_args.address_len);
             ipcd_mem->ret.accept_ret =
             accept(ipcd_mem->args.accept_args.socket,
-                   ipcd_mem->args.accept_args.address,
-                   ipcd_mem->args.accept_args.address_len);
+                   &ipcd_mem->args.accept_args.address,
+                   &ipcd_mem->args.accept_args.address_len);
             break;
         case BIND:
-            printf("BIND\t%d\t%p\t%d\n",
+            printf("BIND %d %d %d %s %d\n",
                    ipcd_mem->args.bind_args.socket,
-                   ipcd_mem->args.bind_args.address,
+                   ipcd_mem->args.bind_args.address.sa_len,
+                   ipcd_mem->args.bind_args.address.sa_family,
+                   ipcd_mem->args.bind_args.address.sa_data,
                    ipcd_mem->args.bind_args.address_len);
             ipcd_mem->ret.bind_ret =
             bind(ipcd_mem->args.bind_args.socket,
-                 ipcd_mem->args.bind_args.address,
+                 &ipcd_mem->args.bind_args.address,
                  ipcd_mem->args.bind_args.address_len);
             break;
         case LISTEN:
+            printf("LISTEN %d %d\n",
+                   ipcd_mem->args.listen_args.socket,
+                   ipcd_mem->args.listen_args.backlog);
             ipcd_mem->ret.listen_ret =
             listen(ipcd_mem->args.listen_args.socket,
                    ipcd_mem->args.listen_args.backlog);
             break;
-        case SETSOCKOPT:
-            ipcd_mem->ret.setsockopt_ret =
-            setsockopt(ipcd_mem->args.setsockopt_args.socket,
-                       ipcd_mem->args.setsockopt_args.level,
-                       ipcd_mem->args.setsockopt_args.option_name,
-                       ipcd_mem->args.setsockopt_args.option_value,
-                       ipcd_mem->args.setsockopt_args.option_len);
+        case SELECT:
+            printf("SELECT %d %ld %d\n",
+                   ipcd_mem->args.select_args.nfds,
+                   ipcd_mem->args.select_args.timeout.tv_sec,
+                   ipcd_mem->args.select_args.timeout.tv_usec);
+            ipcd_mem->ret.select_ret =
+            select(ipcd_mem->args.select_args.nfds,
+                   &ipcd_mem->args.select_args.readfds,
+                   &ipcd_mem->args.select_args.writefds,
+                   &ipcd_mem->args.select_args.errorfds,
+                   &ipcd_mem->args.select_args.timeout);
             break;
         case SOCKET:
-            printf("SOCKET\t%d\t%d\t%d\n",
+            printf("SOCKET %d %d %d\n",
                    ipcd_mem->args.socket_args.domain,
                    ipcd_mem->args.socket_args.type,
                    ipcd_mem->args.socket_args.protocol);
@@ -109,7 +123,6 @@ void* ipcd_init(const char *name)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGUSR1);
-    sigfillset(&mask);
     struct sigaction action;
     action.sa_handler = respond;
     action.sa_mask = mask;

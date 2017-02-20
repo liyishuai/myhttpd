@@ -11,16 +11,27 @@
 #ifndef ipc_h
 #define ipc_h
 
-int accept(int, struct sockaddr * __restrict, socklen_t * __restrict);
-int bind(int, const struct sockaddr *, socklen_t);
-int listen(int, int);
-int setsockopt(int, int, int, const void *, socklen_t);
-int socket(int, int, int);
+int accept(int socket,
+           struct sockaddr * __restrict address,
+           socklen_t * __restrict address_len);
+int bind(int socket,
+         const struct sockaddr *address,
+         socklen_t address_len);
+int listen(int socket,
+           int backlog);
+int select(int nfds,
+           fd_set *restrict readfds,
+           fd_set *restrict writefds,
+           fd_set *restrict errorfds,
+           struct timeval *restrict timeout);
+int socket(int domain,
+           int type,
+           int protocol);
 #ifdef DEBUG
-int test(int, int);
+int test(int a, int b);
 #endif
 
-void* ipc_init(const char *);
+void* ipc_init(const char *name);
 void ipc_close();
 #ifdef DEBUG
 void ipc_test();
