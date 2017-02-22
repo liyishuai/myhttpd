@@ -299,6 +299,8 @@ static httpd_status accept_connection(struct httpd_daemon* daemon) {
         }
         return HTTPD_NO;
     }
+    else
+        printf("s = %d\n", s);
     make_nonblocking_noninheritable(s);
     internal_add_connection(daemon, s, addr, addrlen, HTTPD_NO);
     
@@ -442,7 +444,8 @@ httpd_socket create_listen_socket(struct httpd_daemon* daemon) {
     return fd;
 }
 
-const char *ipcd_name = "ipcd";
+const char *mem_name = "ipcm";
+const char *sem_name = "ipcs";
 
 struct httpd_daemon* create_daemon(uint16_t port,
                                    HTTPD_AccessHandlerCallback dh,
@@ -467,7 +470,7 @@ struct httpd_daemon* create_daemon(uint16_t port,
 
 #ifdef ipc_h
     /* initialize ipc */
-    if (!ipc_init(ipcd_name))
+    if (ipc_init(mem_name, sem_name) == -1)
     {
 #ifdef DEBUG
         httpd_log("Failed to initialize IPC.");

@@ -31,7 +31,7 @@ int socket(int domain,
 int test(int a, int b);
 #endif
 
-void* ipc_init(const char *name);
+int ipc_init(const char *mem_name, const char *sem_name);
 void ipc_close();
 #ifdef DEBUG
 void ipc_test();

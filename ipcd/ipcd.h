@@ -11,7 +11,7 @@
 
 #include "types.h"
 
-void* ipcd_init(const char *);
-void ipcd_close(const char *);
+int ipcd_init(const char *mem_name, const char *sem_name);
+void ipcd_close(const char *mem_name, const char *sem_name);
 
 #endif /* ipcd_h */

@@ -9,6 +9,7 @@
 #include "ipc.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <semaphore.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -19,6 +20,7 @@
 
 int  ipc_fd;
 msg_t *ipc_mem;
+sem_t *ipc_sem;
 pid_t daemon_pid;
 sigset_t mask;
 bool ready;
@@ -28,6 +30,7 @@ void ipc_close()
 {
     munmap(ipc_mem, MSG_SIZE);
     close(ipc_fd);
+    sem_close(ipc_sem);
 }
 
 void respond()
@@ -35,7 +38,7 @@ void respond()
     ready = true;
 }
 
-void* ipc_init(const char *name)
+int ipc_init(const char *mem_name, const char *sem_name)
 {
     printf("client pid: %d\n", getpid());
     printf("daemon pid: ");
@@ -49,7 +52,7 @@ void* ipc_init(const char *name)
     action.sa_flags = 0;
     sigaction(SIGUSR1, &action, NULL);
 
-    ipc_fd = shm_open(name, O_RDWR, S_IRWXU);
+    ipc_fd = shm_open(mem_name, O_RDWR, S_IRWXU);
     if (ipc_fd == -1)
     {
         fputs(strerror(errno), stderr);
@@ -61,11 +64,13 @@ void* ipc_init(const char *name)
         fputs(strerror(errno), stderr);
         goto error;
     }
-    return ipc_mem;
+    ipc_sem = sem_open(sem_name, 0);
+
+    return 0;
 
 error:
     ipc_close();
-    return NULL;
+    return -1;
 }
 
 ret_t call(opcode op, args_t args)
@@ -74,14 +79,7 @@ ret_t call(opcode op, args_t args)
     ipc_mem->args = args;
     ready = false;
     kill(daemon_pid, SIGUSR1);
-    for (rqtp.tv_sec = 0, rqtp.tv_nsec = 1; !ready;
-         rqtp.tv_sec += rqtp.tv_sec + rqtp.tv_nsec / 500000000,
-         rqtp.tv_nsec = rqtp.tv_nsec * 2 % 1000000000)
-    {
-        int errnum = nanosleep(&rqtp, NULL);
-        if (errnum != 0)
-            fputs(strerror(errnum), stderr);
-    }
+    sem_wait(ipc_sem);
     return ipc_mem->ret;
 }
 

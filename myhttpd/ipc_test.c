@@ -17,12 +17,10 @@
 
 void ipc_test()
 {
-    const char *name = "ipcd";
-    if (!ipc_init(name))
-    {
-        fputs(strerror(errno), stderr);
+    const char *mem_name = "ipcm";
+    const char *sem_name = "ipcs";
+    if (ipc_init(mem_name, sem_name) != 0)
         goto error;
-    }
 
     srand((unsigned)time(NULL));
     int a = rand();

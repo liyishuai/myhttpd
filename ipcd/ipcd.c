@@ -9,6 +9,7 @@
 #include "ipcd.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <semaphore.h>
 #include <signal.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -18,6 +19,7 @@
 
 int  ipcd_fd;
 msg_t *ipcd_mem;
+sem_t *ipcd_sem;
 pid_t client_pid;
 
 void respond()
@@ -90,19 +92,21 @@ void respond()
             return;
     }
     printf("return %d\n", ipcd_mem->ret.accept_ret);
-    kill(client_pid, SIGUSR1);
+    sem_post(ipcd_sem);
 }
 
-void ipcd_close(const char *name)
+void ipcd_close(const char *mem_name, const char *sem_name)
 {
     munmap(ipcd_mem, MSG_SIZE);
     close(ipcd_fd);
-    shm_unlink(name);
+    shm_unlink(mem_name);
+    sem_close(ipcd_sem);
+    sem_unlink(sem_name);
 }
 
-void* ipcd_init(const char *name)
+int ipcd_init(const char *mem_name, const char *sem_name)
 {
-    ipcd_fd = shm_open(name, O_RDWR | O_CREAT, S_IRWXU);
+    ipcd_fd = shm_open(mem_name, O_RDWR | O_CREAT | O_EXCL, S_IRWXU);
     if (ipcd_fd == -1)
     {
         fputs(strerror(errno), stderr);
@@ -120,6 +124,13 @@ void* ipcd_init(const char *name)
         goto error;
     }
 
+    ipcd_sem = sem_open(sem_name, O_CREAT | O_EXCL, S_IRWXU, 0);
+    if (ipcd_sem == SEM_FAILED)
+    {
+        fputs(strerror(errno), stderr);
+        goto error;
+    }
+
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGUSR1);
@@ -132,9 +143,9 @@ void* ipcd_init(const char *name)
     printf("client pid: ");
     scanf("%d", &client_pid);
     printf("daemon pid: %d\n", getpid());
-    return ipcd_mem;
+    return 0;
 
 error:
-    ipcd_close(name);
-    return NULL;
+    ipcd_close(mem_name, sem_name);
+    return -1;
 }
