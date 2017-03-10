@@ -22,8 +22,6 @@ int  ipc_fd;
 msg_t *ipc_mem;
 sem_t *ipc_sem;
 pid_t daemon_pid;
-sigset_t mask;
-bool ready;
 struct timespec rqtp;
 
 void ipc_close()
@@ -33,24 +31,11 @@ void ipc_close()
     sem_close(ipc_sem);
 }
 
-void respond()
-{
-    ready = true;
-}
-
 int ipc_init(const char *mem_name, const char *sem_name)
 {
     printf("client pid: %d\n", getpid());
     printf("daemon pid: ");
     scanf("%d", &daemon_pid);
-
-    sigemptyset(&mask);
-    sigaddset(&mask, SIGUSR1);
-    struct sigaction action;
-    action.sa_handler = respond;
-    action.sa_mask = mask;
-    action.sa_flags = 0;
-    sigaction(SIGUSR1, &action, NULL);
 
     ipc_fd = shm_open(mem_name, O_RDWR, S_IRWXU);
     if (ipc_fd == -1)
@@ -77,7 +62,6 @@ ret_t call(opcode op, args_t args)
 {
     ipc_mem->op = op;
     ipc_mem->args = args;
-    ready = false;
     kill(daemon_pid, SIGUSR1);
     sem_wait(ipc_sem);
     return ipc_mem->ret;
