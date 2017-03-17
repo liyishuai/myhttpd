@@ -13,7 +13,9 @@
 #include <sys/stat.h>
 #include "httpd.h"
 
-#define PAGE "<html><head><title>File not found</title></head><body>File not found</body></html>"
+#define PAGE "<html><head><title>404 not found</title></head><body>404 not found</body></html>"
+
+#define DIR "/Users/lastland/Downloads/web/html/"
 
 
 static ssize_t
@@ -65,9 +67,9 @@ ahc_echo (void *cls,
     }
     *ptr = NULL;                  /* reset when done */
     
-    sprintf(file_name, "/Users/lastland/Downloads/web/html/%s", &url[1]);
+    sprintf(file_name, DIR "/%s", &url[1]);
     file = fopen (file_name, "rb");
-    if (NULL != file)
+    while (NULL != file)
     {
         fd = fileno (file);
         if (-1 == fd)
@@ -76,12 +78,19 @@ ahc_echo (void *cls,
             return HTTPD_NO; /* internal error */
         }
         if ( (0 != fstat (fd, &buf)) ||
-            (! S_ISREG (buf.st_mode)) )
+            (!S_ISREG (buf.st_mode)) )
         {
             /* not a regular file, refuse to serve */
             fclose (file);
             file = NULL;
         }
+        if (S_ISDIR(buf.st_mode)) {
+            /* is a dir, open `index.html` */
+            sprintf(file_name, DIR "%s/index.html", &url[1]);
+            file = fopen (file_name, "rb");
+            continue;
+        }
+        break;
     }
     if (NULL == file)
     {
