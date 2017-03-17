@@ -136,13 +136,28 @@ void HTTPD_destroy_response (struct httpd_response *response);
 const char *
 HTTPD_get_reason_phrase_for (unsigned int code);
 
+
+typedef ssize_t
+(*HTTPD_ContentReaderCallback) (void *cls, uint64_t pos, char *buf, size_t max);
+
+typedef void
+(*HTTPD_ContentReaderFreeCallback) (void *cls);
+
 struct httpd_response*
 HTTPD_create_response_from_buffer (size_t size,
                                    void *buffer,
                                    enum HTTPD_ResponseMemoryMode mode);
 
+struct httpd_response*
+HTTPD_create_response_from_callback (uint64_t size,
+                                     size_t block_size,
+                                     HTTPD_ContentReaderCallback crc,
+                                     void *crc_cls,
+                                     HTTPD_ContentReaderFreeCallback crfc);
+
 httpd_status HTTPD_queue_response (struct httpd_connection *conn,
                                    unsigned int status_code,
                                    struct httpd_response *response);
+
 
 #endif /* httpd_h */

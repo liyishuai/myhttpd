@@ -278,6 +278,8 @@ struct httpd_response {
     char* data;
     uint64_t total_size;
     uint64_t data_start;
+    
+    size_t data_buffer_size;
     size_t data_size;
     
     ContentReaderCallback crc;

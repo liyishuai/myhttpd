@@ -865,7 +865,7 @@ static void cleanup_connection(struct httpd_connection* conn) {
 }
 
 static httpd_status try_ready_normal_body(struct httpd_connection* conn) {
-    // ssize_t ret;
+    ssize_t ret;
     struct httpd_response* response;
     
     response = conn->response;
@@ -878,9 +878,28 @@ static httpd_status try_ready_normal_body(struct httpd_connection* conn) {
         response->data_size + response->data_start >
         conn->response_write_position)
         return HTTPD_YES; /* response already ready */
-    // TODO: response crc
+    ret = response->crc (response->crc_cls,
+                         conn->response_write_position,
+                         response->data,
+                         (size_t)MIN ((uint64_t)response->data_buffer_size,
+                                      response->total_size -
+                                      conn->response_write_position));
+    if ( (((ssize_t) HTTPD_CONTENT_READER_END_OF_STREAM) == ret) ||
+        (((ssize_t) HTTPD_CONTENT_READER_END_WITH_ERROR) == ret) )
+    {
+        /* either error or http 1.0 transfer, close socket! */
+        response->total_size = conn->response_write_position;
+        close_connection(conn);
+        return HTTPD_NO;
+    }
+
     response->data_start = conn->response_write_position;
-    // ret and data_size
+    response->data_size = ret;
+    if (0 == ret)
+    {
+        conn->state = HTTPD_CONNECTION_NORMAL_BODY_UNREADY;
+        return HTTPD_NO;
+    }
     return HTTPD_YES;
 }
 
@@ -927,7 +946,10 @@ static httpd_status try_ready_chunked_body(struct httpd_connection* conn) {
                 &response->data[data_write_offset], ret);
     } else {
         /* buffer not in range, try to fill it */
-        // response crc
+        ret = response->crc (response->crc_cls,
+                             conn->response_write_position,
+                             &conn->write_buffer[sizeof (cbuf)],
+                             conn->write_buffer_size - sizeof (cbuf) - 2);
     }
     if ( ((ssize_t) HTTPD_CONTENT_READER_END_WITH_ERROR) == ret)
     {
@@ -1209,6 +1231,9 @@ httpd_status httpd_connection_handle_write(struct httpd_connection* conn) {
                     int err;
                     uint64_t data_write_offset;
                     // TODO: response crc
+                    ret = try_ready_normal_body(conn);
+                    if (HTTPD_YES != ret)
+                        break;
                     data_write_offset = conn->response_write_position -
                         conn->response->data_start;
                     if (data_write_offset > (uint64_t)SIZE_MAX)
