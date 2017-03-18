@@ -214,7 +214,9 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     }
      */
     
+#ifdef __APPLE__
     setsockopt(client_socket, SOL_SOCKET, SO_NOSIGPIPE, &on, sizeof(on));
+#endif
     
     connection = malloc(sizeof(struct httpd_connection));
     if (NULL == connection) {
