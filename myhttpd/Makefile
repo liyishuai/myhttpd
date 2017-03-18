@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -I.. -I../includes -I.
+CFLAGS = -I.. -I../includes -I. -pthread
 
 objects = connection.o daemon.o httpd_string.o \
 memorypool.o reason_phrase.o response.o
