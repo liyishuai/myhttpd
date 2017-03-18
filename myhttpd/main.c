@@ -15,7 +15,7 @@
 
 #define PAGE "<html><head><title>404 not found</title></head><body>404 not found</body></html>"
 
-#define DIR "/Users/lastland/Downloads/web/html/"
+#define DIR "web/html/"
 
 
 static ssize_t
