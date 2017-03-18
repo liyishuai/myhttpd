@@ -17,9 +17,13 @@
 #include <errno.h>
 #include <limits.h>
 #include "httpd.h"
+#include "configurations.h"
 #include "internal.h"
 #include "connection.h"
 
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
 
 #ifdef DEBUG
 void httpd_log(char* c) {
@@ -78,7 +82,7 @@ static ssize_t recv_param_adapter(struct httpd_connection* conn,
     if (i > SSIZE_MAX)
         i = SSIZE_MAX;
     
-    ret = recv(conn->socket, other, i, 0);
+    ret = recv(conn->socket, other, i, MSG_NOSIGNAL);
     
     return ret;
 }
@@ -95,7 +99,7 @@ static ssize_t send_param_adapter(struct httpd_connection* conn,
     if (i > SSIZE_MAX)
         i = SSIZE_MAX;
     
-    ret = send(conn->socket, other, i, 0);
+    ret = send(conn->socket, other, i, MSG_NOSIGNAL);
     
     /* Handle broken kernel / libc, returning -1 but not setting errno;
      kill connection as that should be safe; reported on mailinglist here:
@@ -471,7 +475,9 @@ struct httpd_daemon* create_daemon(uint16_t port,
     addr_len = sizeof(httpd_sockaddr);
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons(port);
+#if HAVE_SOCKADDR_IN_SIN_LEN
     socket_addr.sin_len = addr_len;
+#endif
     servaddr = (struct sockaddr*) &socket_addr;
     
     r = bind(socket_fd, servaddr, addr_len);

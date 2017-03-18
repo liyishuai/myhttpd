@@ -7,7 +7,7 @@ memorypool.o reason_phrase.o response.o
 server : main.o $(objects)
 	$(CC) -o server $(CFLAGS) main.o $(objects)
 
-main.o : ../httpd.h
+main.o : ../httpd.h ../includes/configurations.h
 $(objects) : ../httpd.h ../includes/internal.h
 daemon.o connection.o response.o : connection.h
 connection.o httpd_string.o : httpd_string.h
