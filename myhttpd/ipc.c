@@ -57,12 +57,13 @@ error:
     return -1;
 }
 
-ret_t call(opcode op, args_t args)
+ret_t call(opcode op, args_t *args)
 {
     ipc_mem->op = op;
-    ipc_mem->args = args;
+    ipc_mem->args = *args;
     kill(daemon_pid, SIGUSR1);
     sem_wait(ipc_sem);
+    *args = ipc_mem->args;
     return ipc_mem->ret;
 }
 
@@ -78,7 +79,7 @@ int accept(int socket,
            address->sa_data,
            sizeof address->sa_data);
     args.accept_args.address_len = *address_len;
-    accept_ret_t ret = call(ACCEPT, args).accept_ret;
+    accept_ret_t ret = call(ACCEPT, &args).accept_ret;
     address->sa_len = args.accept_args.address.sa_len;
     address->sa_family = args.accept_args.address.sa_family;
     memcpy(address->sa_data,
@@ -100,14 +101,14 @@ int bind(int socket,
            address->sa_data,
            sizeof address->sa_data);
     args.bind_args.address_len = address_len;
-    return call(BIND, args).bind_ret;
+    return call(BIND, &args).bind_ret;
 }
 
 int close(int fildes)
 {
     args_t args;
     args.close_args.fildes = fildes;
-    return call(CLOSE, args).close_ret;
+    return call(CLOSE, &args).close_ret;
 }
 
 int fcntl3(int fildes,
@@ -118,7 +119,7 @@ int fcntl3(int fildes,
     args.fcntl_args.fildes = fildes;
     args.fcntl_args.cmd = cmd;
     args.fcntl_args.arg = arg;
-    return call(FCNTL, args).fcntl_ret;
+    return call(FCNTL, &args).fcntl_ret;
 }
 
 int fcntl2(int fildes,
@@ -133,7 +134,21 @@ int listen(int socket,
     args_t args;
     args.listen_args.socket = socket;
     args.listen_args.backlog = backlog;
-    return call(LISTEN, args).listen_ret;
+    return call(LISTEN, &args).listen_ret;
+}
+
+ssize_t recv(int socket,
+             void *buffer,
+             size_t length,
+             int flags)
+{
+    args_t args;
+    args.recv_args.socket = socket;
+    args.recv_args.length = length;
+    args.recv_args.flags = flags;
+    recv_ret_t ret = call(RECV, &args).recv_ret;
+    memcpy(buffer, args.recv_args.buffer, sizeof buffer);
+    return ret;
 }
 
 int select(int nfds,
@@ -155,7 +170,7 @@ int select(int nfds,
            sizeof errorfds->fds_bits);
     args.select_args.timeout.tv_sec = timeout->tv_sec;
     args.select_args.timeout.tv_usec = timeout->tv_usec;
-    select_ret_t ret = call(SELECT, args).select_ret;
+    select_ret_t ret = call(SELECT, &args).select_ret;
     memcpy(readfds->fds_bits,
            args.select_args.readfds.fds_bits,
            sizeof readfds->fds_bits);
@@ -170,6 +185,34 @@ int select(int nfds,
     return ret;
 }
 
+ssize_t send(int socket,
+             const void *buffer,
+             size_t length,
+             int flags)
+{
+    args_t args;
+    args.send_args.socket = socket;
+    args.send_args.length = length;
+    args.send_args.flags = flags;
+    memcpy(args.send_args.buffer, buffer, length);
+    return call(SEND, &args).send_ret;
+}
+
+int setsockopt(int socket,
+               int level,
+               int option_name,
+               const void *option_value,
+               socklen_t option_len)
+{
+    args_t args;
+    args.setsockopt_args.socket = socket;
+    args.setsockopt_args.level = level;
+    args.setsockopt_args.option_name = option_name;
+    args.setsockopt_args.option_len = option_len;
+    memcpy(args.setsockopt_args.option_value, option_value, option_len);
+    return call(SETSOCKOPT, &args).setsockopt_ret;
+}
+
 int socket(int domain,
            int type,
            int protocol)
@@ -178,7 +221,7 @@ int socket(int domain,
     args.socket_args.domain = domain;
     args.socket_args.type = type;
     args.socket_args.protocol = protocol;
-    return call(SOCKET, args).socket_ret;
+    return call(SOCKET, &args).socket_ret;
 }
 
 #ifdef DEBUG
@@ -187,6 +230,6 @@ int test(int a, int b)
     args_t args;
     args.test_args.a = a;
     args.test_args.b = b;
-    return call(TEST, args).test_ret;
+    return call(TEST, &args).test_ret;
 }
 #endif

@@ -25,11 +25,24 @@ int fcntl2(int fildes,
            int cmd);
 int listen(int socket,
            int backlog);
+ssize_t recv(int socket,
+             void *buffer,
+             size_t length,
+             int flags);
 int select(int nfds,
            fd_set *restrict readfds,
            fd_set *restrict writefds,
            fd_set *restrict errorfds,
            struct timeval *restrict timeout);
+ssize_t send(int socket,
+             const void *buffer,
+             size_t length,
+             int flags);
+int setsockopt(int socket,
+               int level,
+               int option_name,
+               const void *option_value,
+               socklen_t option_len);
 int socket(int domain,
            int type,
            int protocol);

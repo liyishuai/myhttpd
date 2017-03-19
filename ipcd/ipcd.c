@@ -73,6 +73,17 @@ void respond()
             listen(ipcd_mem->args.listen_args.socket,
                    ipcd_mem->args.listen_args.backlog);
             break;
+        case RECV:
+            printf("RECV %d %llu %d\n",
+                   ipcd_mem->args.recv_args.socket,
+                   ipcd_mem->args.recv_args.length,
+                   ipcd_mem->args.recv_args.flags);
+            ipcd_mem->ret.recv_ret =
+            recv(ipcd_mem->args.recv_args.socket,
+                 ipcd_mem->args.recv_args.buffer,
+                 ipcd_mem->args.recv_args.length,
+                 ipcd_mem->args.recv_args.flags);
+            break;
         case SELECT:
             printf("SELECT %d %ld %d\n",
                    ipcd_mem->args.select_args.nfds,
@@ -84,6 +95,32 @@ void respond()
                    &ipcd_mem->args.select_args.writefds,
                    &ipcd_mem->args.select_args.errorfds,
                    &ipcd_mem->args.select_args.timeout);
+            break;
+        case SEND:
+            printf("SEND %d %s %lu %d\n",
+                   ipcd_mem->args.send_args.socket,
+                   ipcd_mem->args.send_args.buffer,
+                   ipcd_mem->args.send_args.length,
+                   ipcd_mem->args.send_args.flags);
+            ipcd_mem->ret.send_ret =
+            send(ipcd_mem->args.send_args.socket,
+                 ipcd_mem->args.send_args.buffer,
+                 ipcd_mem->args.send_args.length,
+                 ipcd_mem->args.send_args.flags);
+            break;
+        case SETSOCKOPT:
+            printf("SETSOCKOPT %d %d %d %d %u\n",
+                   ipcd_mem->args.setsockopt_args.socket,
+                   ipcd_mem->args.setsockopt_args.level,
+                   ipcd_mem->args.setsockopt_args.option_name,
+                   *(int *)ipcd_mem->args.setsockopt_args.option_value,
+                   ipcd_mem->args.setsockopt_args.option_len);
+            ipcd_mem->ret.setsockopt_ret =
+            setsockopt(ipcd_mem->args.setsockopt_args.socket,
+                       ipcd_mem->args.setsockopt_args.level,
+                       ipcd_mem->args.setsockopt_args.option_name,
+                       ipcd_mem->args.setsockopt_args.option_value,
+                       ipcd_mem->args.setsockopt_args.option_len);
             break;
         case SOCKET:
             printf("SOCKET %d %d %d\n",

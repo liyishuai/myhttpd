@@ -13,6 +13,9 @@
 #ifndef types_h
 #define types_h
 
+#define BUFFER_SIZE 0x10000
+#define OPTION_SIZE 0x100
+
 typedef uint8_t     sa_family_t;
 typedef uint32_t    socklen_t;
 
@@ -24,7 +27,10 @@ typedef enum {
     CLOSE,
     FCNTL,
     LISTEN,
+    RECV,
     SELECT,
+    SEND,
+    SETSOCKOPT,
     SOCKET
 #ifdef DEBUG
     , TEST
@@ -59,12 +65,34 @@ typedef struct {
 } listen_args_t;
 
 typedef struct {
+    int socket;
+    size_t length;
+    int flags;
+    unsigned char buffer[BUFFER_SIZE];
+} recv_args_t;
+
+typedef struct {
     int nfds;
     fd_set readfds;
     fd_set writefds;
     fd_set errorfds;
     struct timeval timeout;
 } select_args_t;
+
+typedef struct {
+    int socket;
+    size_t length;
+    int flags;
+    unsigned char buffer[BUFFER_SIZE];
+} send_args_t;
+
+typedef struct {
+    int socket;
+    int level;
+    int option_name;
+    socklen_t option_len;
+    unsigned char option_value[OPTION_SIZE];
+} setsockopt_args_t;
 
 typedef struct {
     int domain;
@@ -84,7 +112,10 @@ typedef int bind_ret_t;
 typedef int close_ret_t;
 typedef int fcntl_ret_t;
 typedef int listen_ret_t;
+typedef ssize_t recv_ret_t;
 typedef int select_ret_t;
+typedef ssize_t send_ret_t;
+typedef int setsockopt_ret_t;
 typedef int socket_ret_t;
 #ifdef DEBUG
 typedef int test_ret_t;
@@ -96,7 +127,10 @@ typedef union {
     close_args_t        close_args;
     fcntl_args_t        fcntl_args;
     listen_args_t       listen_args;
+    recv_args_t         recv_args;
     select_args_t       select_args;
+    send_args_t         send_args;
+    setsockopt_args_t   setsockopt_args;
     socket_args_t       socket_args;
 #ifdef DEBUG
     test_args_t         test_args;
@@ -109,7 +143,10 @@ typedef union {
     close_ret_t         close_ret;
     fcntl_ret_t         fcntl_ret;
     listen_ret_t        listen_ret;
+    recv_ret_t          recv_ret;
     select_ret_t        select_ret;
+    send_ret_t          send_ret;
+    setsockopt_ret_t    setsockopt_ret;
     socket_ret_t        socket_ret;
 #ifdef DEBUG
     test_ret_t          test_ret;
@@ -118,8 +155,8 @@ typedef union {
 
 typedef struct {
     opcode op;
-    args_t args;
     ret_t  ret;
+    args_t args;
 } msg_t;
 
 #define MSG_SIZE sizeof(msg_t)
