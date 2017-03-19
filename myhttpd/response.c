@@ -92,3 +92,27 @@ HTTPD_create_response_from_buffer (size_t size,
     r2 = HTTPD_RESPMEM_MUST_COPY == mode;
     return HTTPD_create_response_from_data(size, buffer, r1, r2);
 }
+
+struct httpd_response*
+HTTPD_create_response_from_callback (uint64_t size,
+                                     size_t block_size,
+                                     HTTPD_ContentReaderCallback crc,
+                                     void *crc_cls,
+                                     HTTPD_ContentReaderFreeCallback crfc)
+{
+    struct httpd_response *response;
+    
+    if ((NULL == crc) || (0 == block_size))
+        return NULL;
+    if (NULL == (response = malloc (sizeof (struct httpd_response) + block_size)))
+        return NULL;
+    memset (response, 0, sizeof (struct httpd_response));
+    response->fd = -1;
+    response->data = (void *) &response[1];
+    response->data_buffer_size = block_size;
+    response->crc = crc;
+    response->crfc = crfc;
+    response->crc_cls = crc_cls;
+    response->total_size = size;
+    return response;
+}

@@ -10,6 +10,7 @@
 #define httpd_string_h
 
 #include <stdio.h>
+#include <stdint.h>
 
 int
 HTTPD_str_equal_caseless_ (const char * const str1,
