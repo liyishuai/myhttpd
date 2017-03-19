@@ -17,6 +17,12 @@ int accept(int socket,
 int bind(int socket,
          const struct sockaddr *address,
          socklen_t address_len);
+int close(int fildes);
+int fcntl3(int fildes,
+           int cmd,
+           int arg);
+int fcntl2(int fildes,
+           int cmd);
 int listen(int socket,
            int backlog);
 int select(int nfds,

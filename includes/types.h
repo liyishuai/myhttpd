@@ -21,6 +21,8 @@ struct sockaddr;
 typedef enum {
     ACCEPT,
     BIND,
+    CLOSE,
+    FCNTL,
     LISTEN,
     SELECT,
     SOCKET
@@ -40,6 +42,16 @@ typedef struct {
     struct sockaddr address;
     socklen_t address_len;
 } bind_args_t;
+
+typedef struct {
+    int fildes;
+} close_args_t;
+
+typedef struct {
+    int fildes;
+    int cmd;
+    int arg;
+} fcntl_args_t;
 
 typedef struct {
     int socket;
@@ -69,6 +81,8 @@ typedef struct {
 
 typedef int accept_ret_t;
 typedef int bind_ret_t;
+typedef int close_ret_t;
+typedef int fcntl_ret_t;
 typedef int listen_ret_t;
 typedef int select_ret_t;
 typedef int socket_ret_t;
@@ -79,6 +93,8 @@ typedef int test_ret_t;
 typedef union {
     accept_args_t       accept_args;
     bind_args_t         bind_args;
+    close_args_t        close_args;
+    fcntl_args_t        fcntl_args;
     listen_args_t       listen_args;
     select_args_t       select_args;
     socket_args_t       socket_args;
@@ -90,6 +106,8 @@ typedef union {
 typedef union {
     accept_ret_t        accept_ret;
     bind_ret_t          bind_ret;
+    close_ret_t         close_ret;
+    fcntl_ret_t         fcntl_ret;
     listen_ret_t        listen_ret;
     select_ret_t        select_ret;
     socket_ret_t        socket_ret;

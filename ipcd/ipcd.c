@@ -49,6 +49,22 @@ void respond()
                  &ipcd_mem->args.bind_args.address,
                  ipcd_mem->args.bind_args.address_len);
             break;
+        case CLOSE:
+            printf("CLOSE %d\n",
+                   ipcd_mem->args.close_args.fildes);
+            ipcd_mem->ret.close_ret =
+            close(ipcd_mem->args.close_args.fildes);
+            break;
+        case FCNTL:
+            printf("FCNTL %d %d %d\n",
+                   ipcd_mem->args.fcntl_args.fildes,
+                   ipcd_mem->args.fcntl_args.cmd,
+                   ipcd_mem->args.fcntl_args.arg);
+            ipcd_mem->ret.fcntl_ret =
+            fcntl(ipcd_mem->args.fcntl_args.fildes,
+                  ipcd_mem->args.fcntl_args.cmd,
+                  ipcd_mem->args.fcntl_args.arg);
+            break;
         case LISTEN:
             printf("LISTEN %d %d\n",
                    ipcd_mem->args.listen_args.socket,

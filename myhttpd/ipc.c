@@ -8,7 +8,6 @@
 
 #include "ipc.h"
 #include <errno.h>
-#include <fcntl.h>
 #include <semaphore.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -102,6 +101,30 @@ int bind(int socket,
            sizeof address->sa_data);
     args.bind_args.address_len = address_len;
     return call(BIND, args).bind_ret;
+}
+
+int close(int fildes)
+{
+    args_t args;
+    args.close_args.fildes = fildes;
+    return call(CLOSE, args).close_ret;
+}
+
+int fcntl3(int fildes,
+           int cmd,
+           int arg)
+{
+    args_t args;
+    args.fcntl_args.fildes = fildes;
+    args.fcntl_args.cmd = cmd;
+    args.fcntl_args.arg = arg;
+    return call(FCNTL, args).fcntl_ret;
+}
+
+int fcntl2(int fildes,
+           int cmd)
+{
+    return fcntl3(fildes, cmd, 0);
 }
 
 int listen(int socket,

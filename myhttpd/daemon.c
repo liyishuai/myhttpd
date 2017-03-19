@@ -30,13 +30,13 @@ void httpd_log(char* c) {
 
 static httpd_status make_noninheritable(httpd_socket socket) {
     int flags, r;
-    flags = fcntl(socket, F_GETFD);
+    flags = fcntl2(socket, F_GETFD);
     if (-1 == flags) {
         return HTTPD_NO;
     }
     
     if (flags != (flags | FD_CLOEXEC)) {
-        r = fcntl(socket, F_SETFD, flags | FD_CLOEXEC);
+        r = fcntl3(socket, F_SETFD, flags | FD_CLOEXEC);
     }
     if (r != 0) {
         return HTTPD_NO;
@@ -47,13 +47,13 @@ static httpd_status make_noninheritable(httpd_socket socket) {
 
 static httpd_status make_nonblocking(httpd_socket socket) {
     int flags, r;
-    flags = fcntl(socket, F_GETFL);
+    flags = fcntl2(socket, F_GETFL);
     if (-1 == flags) {
         return HTTPD_NO;
     }
     
     if (flags != (flags | O_NONBLOCK)) {
-        r = fcntl(socket, F_SETFL, flags | O_NONBLOCK);
+        r = fcntl3(socket, F_SETFL, flags | O_NONBLOCK);
     }
     if (r != 0) {
         return HTTPD_NO;
