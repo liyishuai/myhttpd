@@ -147,7 +147,7 @@ ssize_t recv(int socket,
     args.recv_args.length = length;
     args.recv_args.flags = flags;
     recv_ret_t ret = call(RECV, &args).recv_ret;
-    memcpy(buffer, args.recv_args.buffer, sizeof buffer);
+    memcpy(buffer, args.recv_args.buffer, length);
     return ret;
 }
 
