@@ -104,7 +104,7 @@ int bind(int socket,
     return call(BIND, &args).bind_ret;
 }
 
-int close(int fildes)
+int close1(int fildes)
 {
     args_t args;
     args.close_args.fildes = fildes;

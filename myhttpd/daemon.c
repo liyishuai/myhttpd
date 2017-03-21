@@ -202,7 +202,7 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     static int on = 1;
     
     if (client_socket >= FD_SETSIZE) {
-        close(client_socket);
+        close1(client_socket);
         errno = EINVAL;
         return HTTPD_NO;
     }
@@ -222,7 +222,7 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     connection = malloc(sizeof(struct httpd_connection));
     if (NULL == connection) {
         int eno = errno;
-        close(client_socket);
+        close1(client_socket);
         errno = eno;
         return HTTPD_NO;
     }
@@ -230,7 +230,7 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     
     connection->pool = httpd_pool_create(daemon->pool_size);
     if (NULL == connection->pool) {
-        close(client_socket);
+        close1(client_socket);
         errno = ENOMEM;
         return HTTPD_NO;
     }
@@ -293,7 +293,7 @@ static httpd_status accept_connection(struct httpd_daemon* daemon) {
             return HTTPD_NO;
         }
         if (INVALID_SOCKET != s) {
-            close(s);
+            close1(s);
         }
         if (EMFILE == err ||
             ENFILE == err ||
