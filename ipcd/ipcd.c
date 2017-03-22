@@ -26,11 +26,8 @@ void respond()
 {
     switch (ipcd_mem->op) {
         case ACCEPT:
-            printf("ACCEPT %d %d %d %s %d\n",
+            printf("ACCEPT %d %d\n",
                    ipcd_mem->args.accept_args.socket,
-                   ipcd_mem->args.accept_args.address.sa_len,
-                   ipcd_mem->args.accept_args.address.sa_family,
-                   ipcd_mem->args.accept_args.address.sa_data,
                    ipcd_mem->args.accept_args.address_len);
             ipcd_mem->ret.accept_ret =
             accept(ipcd_mem->args.accept_args.socket,
@@ -38,11 +35,8 @@ void respond()
                    &ipcd_mem->args.accept_args.address_len);
             break;
         case BIND:
-            printf("BIND %d %d %d %s %d\n",
+            printf("BIND %d %d\n",
                    ipcd_mem->args.bind_args.socket,
-                   ipcd_mem->args.bind_args.address.sa_len,
-                   ipcd_mem->args.bind_args.address.sa_family,
-                   ipcd_mem->args.bind_args.address.sa_data,
                    ipcd_mem->args.bind_args.address_len);
             ipcd_mem->ret.bind_ret =
             bind(ipcd_mem->args.bind_args.socket,

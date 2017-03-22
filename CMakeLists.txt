@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.3)
+project(myhttpd)
+include_directories(includes)
+aux_source_directory(myhttpd SERVER)
+aux_source_directory(ipcd IPCD)
+add_executable(server ${SERVER})
+add_executable(daemon ${IPCD})

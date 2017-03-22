@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 
 #ifndef types_h
 #define types_h
@@ -16,10 +17,10 @@
 #define BUFFER_SIZE 0x10000
 #define OPTION_SIZE 0x100
 
-typedef uint8_t     sa_family_t;
 typedef uint32_t    socklen_t;
 
 struct sockaddr;
+struct timeval;
 
 typedef enum {
     ACCEPT,
