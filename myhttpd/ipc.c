@@ -33,7 +33,7 @@ void ipc_close()
 
 int ipc_init(const char *mem_name, const char *sem_name)
 {
-    printf("client pid: %d\n", getpid());
+    printf("server pid: %d\n", getpid());
     printf("daemon pid: ");
     scanf("%d", &daemon_pid);
 

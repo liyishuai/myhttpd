@@ -187,7 +187,7 @@ int ipcd_init(const char *mem_name, const char *sem_name)
     action.sa_flags = 0;
     sigaction(SIGUSR1, &action, NULL);
 
-    printf("client pid: ");
+    printf("server pid: ");
     scanf("%d", &client_pid);
     printf("daemon pid: %d\n", getpid());
     return 0;
