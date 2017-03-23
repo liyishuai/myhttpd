@@ -27,8 +27,8 @@
 #endif
 
 #ifdef DEBUG
-void httpd_log(char* c) {
-    printf("%s\n", c);
+void httpd_log(const char* c) {
+    fputs(c, stderr);
 }
 #endif
 
@@ -305,8 +305,10 @@ static httpd_status accept_connection(struct httpd_daemon* daemon) {
         }
         return HTTPD_NO;
     }
+#ifdef DEBUG
     else
-        printf("s = %d\n", s);
+        fprintf(stderr, "s = %d\n", s);
+#endif
     make_nonblocking_noninheritable(s);
     internal_add_connection(daemon, s, addr, addrlen, HTTPD_NO);
     

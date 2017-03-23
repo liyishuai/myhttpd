@@ -69,7 +69,7 @@ typedef struct {
     int socket;
     size_t length;
     int flags;
-    unsigned char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE];
 } recv_args_t;
 
 typedef struct {

@@ -33,9 +33,10 @@ void ipc_close()
 
 int ipc_init(const char *mem_name, const char *sem_name)
 {
-    printf("server pid: %d\n", getpid());
-    printf("daemon pid: ");
+    fprintf(stderr, "server pid: %d\n", getpid());
+    fprintf(stderr, "daemon pid: ");
     scanf("%d", &daemon_pid);
+    fprintf(stderr, "%d\n", daemon_pid);
 
     ipc_fd = shm_open(mem_name, O_RDWR, S_IRWXU);
     if (ipc_fd == -1)

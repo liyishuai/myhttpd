@@ -27,9 +27,9 @@ void ipc_test()
     int b = rand();
     int c = test(a, b);
     if (c == a + b)
-        printf("IPC test succeed: %d + %d = %d.\n", a, b, c);
+        fprintf(stderr, "IPC test succeed: %d + %d = %d.\n", a, b, c);
     else
-        printf("IPC test failed: %d + %d != %d.\n", a, b, c);
+        fprintf(stderr, "IPC test failed: %d + %d != %d.\n", a, b, c);
 
 error:
     ipc_close();

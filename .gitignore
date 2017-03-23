@@ -5,3 +5,5 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
+myhttpd.xcodeproj/project.xcworkspace/
+myhttpd.xcodeproj/xcuserdata/

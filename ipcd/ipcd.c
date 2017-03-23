@@ -26,63 +26,80 @@ void respond()
 {
     switch (ipcd_mem->op) {
         case ACCEPT:
-            printf("ACCEPT %d %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "ACCEPT %d %d\n",
                    ipcd_mem->args.accept_args.socket,
                    ipcd_mem->args.accept_args.address_len);
+#endif
             ipcd_mem->ret.accept_ret =
             accept(ipcd_mem->args.accept_args.socket,
                    &ipcd_mem->args.accept_args.address,
                    &ipcd_mem->args.accept_args.address_len);
             break;
         case BIND:
-            printf("BIND %d %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "BIND %d %d\n",
                    ipcd_mem->args.bind_args.socket,
                    ipcd_mem->args.bind_args.address_len);
+#endif
             ipcd_mem->ret.bind_ret =
             bind(ipcd_mem->args.bind_args.socket,
                  &ipcd_mem->args.bind_args.address,
                  ipcd_mem->args.bind_args.address_len);
             break;
         case CLOSE:
-            printf("CLOSE %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "CLOSE %d\n",
                    ipcd_mem->args.close_args.fildes);
+#endif
             ipcd_mem->ret.close_ret =
             close(ipcd_mem->args.close_args.fildes);
             break;
         case FCNTL:
-            printf("FCNTL %d %d %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "FCNTL %d %d %d\n",
                    ipcd_mem->args.fcntl_args.fildes,
                    ipcd_mem->args.fcntl_args.cmd,
                    ipcd_mem->args.fcntl_args.arg);
+#endif
             ipcd_mem->ret.fcntl_ret =
             fcntl(ipcd_mem->args.fcntl_args.fildes,
                   ipcd_mem->args.fcntl_args.cmd,
                   ipcd_mem->args.fcntl_args.arg);
             break;
         case LISTEN:
-            printf("LISTEN %d %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "LISTEN %d %d\n",
                    ipcd_mem->args.listen_args.socket,
                    ipcd_mem->args.listen_args.backlog);
+#endif
             ipcd_mem->ret.listen_ret =
             listen(ipcd_mem->args.listen_args.socket,
                    ipcd_mem->args.listen_args.backlog);
             break;
         case RECV:
-            printf("RECV %d %lu %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "RECV %d %lu %d\n",
                    ipcd_mem->args.recv_args.socket,
                    ipcd_mem->args.recv_args.length,
                    ipcd_mem->args.recv_args.flags);
+#endif
             ipcd_mem->ret.recv_ret =
             recv(ipcd_mem->args.recv_args.socket,
                  ipcd_mem->args.recv_args.buffer,
                  ipcd_mem->args.recv_args.length,
                  ipcd_mem->args.recv_args.flags);
+#ifdef DEBUG
+            fputs(ipcd_mem->args.recv_args.buffer, stderr);
+#endif
             break;
         case SELECT:
-            printf("SELECT %d %ld %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "SELECT %d %ld %d\n",
                    ipcd_mem->args.select_args.nfds,
                    ipcd_mem->args.select_args.timeout.tv_sec,
                    ipcd_mem->args.select_args.timeout.tv_usec);
+#endif
             ipcd_mem->ret.select_ret =
             select(ipcd_mem->args.select_args.nfds,
                    &ipcd_mem->args.select_args.readfds,
@@ -91,11 +108,13 @@ void respond()
                    &ipcd_mem->args.select_args.timeout);
             break;
         case SEND:
-            printf("SEND %d %s %lu %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "SEND %d %s %lu %d\n",
                    ipcd_mem->args.send_args.socket,
                    ipcd_mem->args.send_args.buffer,
                    ipcd_mem->args.send_args.length,
                    ipcd_mem->args.send_args.flags);
+#endif
             ipcd_mem->ret.send_ret =
             send(ipcd_mem->args.send_args.socket,
                  ipcd_mem->args.send_args.buffer,
@@ -103,12 +122,14 @@ void respond()
                  ipcd_mem->args.send_args.flags);
             break;
         case SETSOCKOPT:
-            printf("SETSOCKOPT %d %d %d %d %u\n",
+#ifdef DEBUG
+            fprintf(stderr, "SETSOCKOPT %d %d %d %d %u\n",
                    ipcd_mem->args.setsockopt_args.socket,
                    ipcd_mem->args.setsockopt_args.level,
                    ipcd_mem->args.setsockopt_args.option_name,
                    *(int *)ipcd_mem->args.setsockopt_args.option_value,
                    ipcd_mem->args.setsockopt_args.option_len);
+#endif
             ipcd_mem->ret.setsockopt_ret =
             setsockopt(ipcd_mem->args.setsockopt_args.socket,
                        ipcd_mem->args.setsockopt_args.level,
@@ -117,10 +138,12 @@ void respond()
                        ipcd_mem->args.setsockopt_args.option_len);
             break;
         case SOCKET:
-            printf("SOCKET %d %d %d\n",
+#ifdef DEBUG
+            fprintf(stderr, "SOCKET %d %d %d\n",
                    ipcd_mem->args.socket_args.domain,
                    ipcd_mem->args.socket_args.type,
                    ipcd_mem->args.socket_args.protocol);
+#endif
             ipcd_mem->ret.socket_ret =
             socket(ipcd_mem->args.socket_args.domain,
                    ipcd_mem->args.socket_args.type,
@@ -128,7 +151,7 @@ void respond()
             break;
 #ifdef DEBUG
         case TEST:
-            printf("TEST: %d + %d\n",
+            fprintf(stderr, "TEST: %d + %d\n",
                    ipcd_mem->args.test_args.a,
                    ipcd_mem->args.test_args.b);
             ipcd_mem->ret.test_ret =
@@ -138,7 +161,7 @@ void respond()
         default:
             return;
     }
-    printf("return %d\n", ipcd_mem->ret.accept_ret);
+    fprintf(stderr, "return %d\n", ipcd_mem->ret.accept_ret);
     sem_post(ipcd_sem);
 }
 
@@ -187,9 +210,9 @@ int ipcd_init(const char *mem_name, const char *sem_name)
     action.sa_flags = 0;
     sigaction(SIGUSR1, &action, NULL);
 
-    printf("server pid: ");
+    fprintf(stderr, "server pid: ");
     scanf("%d", &client_pid);
-    printf("daemon pid: %d\n", getpid());
+    fprintf(stderr, "%d\ndaemon pid: %d\n", client_pid, getpid());
     return 0;
 
 error:
