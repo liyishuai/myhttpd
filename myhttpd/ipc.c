@@ -8,6 +8,7 @@
 
 #include "ipc.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <semaphore.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -73,19 +74,13 @@ int accept(int socket,
 {
     args_t args;
     args.accept_args.socket = socket;
-    args.accept_args.address.sa_len = address->sa_len;
-    args.accept_args.address.sa_family = address->sa_family;
-    memcpy(args.accept_args.address.sa_data,
-           address->sa_data,
-           sizeof address->sa_data);
+    memcpy(&args.accept_args.address, address, *address_len);
     args.accept_args.address_len = *address_len;
     accept_ret_t ret = call(ACCEPT, &args).accept_ret;
-    address->sa_len = args.accept_args.address.sa_len;
-    address->sa_family = args.accept_args.address.sa_family;
-    memcpy(address->sa_data,
-           args.accept_args.address.sa_data,
-           sizeof address->sa_data);
     *address_len = args.accept_args.address_len;
+    memcpy(address,
+           &args.accept_args.address,
+           *address_len);
     return ret;
 }
 
@@ -95,11 +90,9 @@ int bind(int socket,
 {
     args_t args;
     args.bind_args.socket = socket;
-    args.bind_args.address.sa_len = address->sa_len;
-    args.bind_args.address.sa_family = address->sa_family;
-    memcpy(args.bind_args.address.sa_data,
-           address->sa_data,
-           sizeof address->sa_data);
+    memcpy(&args.bind_args.address,
+           address,
+           address_len);
     args.bind_args.address_len = address_len;
     return call(BIND, &args).bind_ret;
 }
@@ -152,34 +145,22 @@ ssize_t recv(int socket,
 }
 
 int select(int nfds,
-           fd_set *restrict readfds,
-           fd_set *restrict writefds,
-           fd_set *restrict errorfds,
-           struct timeval *restrict timeout)
+           fd_set *__restrict readfds,
+           fd_set *__restrict writefds,
+           fd_set *__restrict errorfds,
+           struct timeval *__restrict timeout)
 {
     args_t args;
     args.select_args.nfds = nfds;
-    memcpy(args.select_args.readfds.fds_bits,
-           readfds->fds_bits,
-           sizeof readfds->fds_bits);
-    memcpy(args.select_args.writefds.fds_bits,
-           writefds->fds_bits,
-           sizeof writefds->fds_bits);
-    memcpy(args.select_args.errorfds.fds_bits,
-           errorfds->fds_bits,
-           sizeof errorfds->fds_bits);
+    args.select_args.readfds  = *readfds;
+    args.select_args.writefds = *writefds;
+    args.select_args.errorfds = *errorfds;
     args.select_args.timeout.tv_sec = timeout->tv_sec;
     args.select_args.timeout.tv_usec = timeout->tv_usec;
     select_ret_t ret = call(SELECT, &args).select_ret;
-    memcpy(readfds->fds_bits,
-           args.select_args.readfds.fds_bits,
-           sizeof readfds->fds_bits);
-    memcpy(writefds->fds_bits,
-           args.select_args.writefds.fds_bits,
-           sizeof writefds->fds_bits);
-    memcpy(writefds->fds_bits,
-           args.select_args.writefds.fds_bits,
-           sizeof writefds->fds_bits);
+    *readfds  = args.select_args.readfds;
+    *writefds = args.select_args.writefds;
+    *errorfds = args.select_args.errorfds;
     timeout->tv_sec = args.select_args.timeout.tv_sec;
     timeout->tv_usec = args.select_args.timeout.tv_usec;
     return ret;

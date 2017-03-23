@@ -30,10 +30,10 @@ ssize_t recv(int socket,
              size_t length,
              int flags);
 int select(int nfds,
-           fd_set *restrict readfds,
-           fd_set *restrict writefds,
-           fd_set *restrict errorfds,
-           struct timeval *restrict timeout);
+           fd_set *__restrict readfds,
+           fd_set *__restrict writefds,
+           fd_set *__restrict errorfds,
+           struct timeval *__restrict timeout);
 ssize_t send(int socket,
              const void *buffer,
              size_t length,

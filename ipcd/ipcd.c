@@ -68,7 +68,7 @@ void respond()
                    ipcd_mem->args.listen_args.backlog);
             break;
         case RECV:
-            printf("RECV %d %llu %d\n",
+            printf("RECV %d %lu %d\n",
                    ipcd_mem->args.recv_args.socket,
                    ipcd_mem->args.recv_args.length,
                    ipcd_mem->args.recv_args.flags);
