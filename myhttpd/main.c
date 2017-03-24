@@ -124,7 +124,7 @@ int
 main (int argc, char *const *argv)
 {
     struct httpd_daemon *d;
-    
+
     if (argc != 2)
     {
         printf ("%s PORT\n", argv[0]);
@@ -133,7 +133,7 @@ main (int argc, char *const *argv)
     d = create_daemon (atoi (argv[1]), &ahc_echo, PAGE);
     if (d == NULL)
         return 1;
-    while (tolower(getchar()) != 'q');
+    pause();
     stop_daemon (d);
     return 0;
 }

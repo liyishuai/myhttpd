@@ -161,7 +161,9 @@ void respond()
         default:
             return;
     }
+#ifdef DEBUG
     fprintf(stderr, "return %d\n", ipcd_mem->ret.accept_ret);
+#endif
     sem_post(ipcd_sem);
 }
 
