@@ -1,16 +1,9 @@
-//
-//  httpd.h
-//  myhttpd
-//
-//  Created by lastland on 03/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
 #ifndef httpd_h
 #define httpd_h
 
 #define INVALID_SOCKET -1
 
+#include <stdint.h>
 #include <netinet/ip.h>
 
 #define HTTPD_YES 0
@@ -95,7 +88,7 @@ typedef void (*ContentReaderFreeCallback) (void *cls);
 
 enum HTTPD_ResponseMemoryMode
 {
-    
+
     /**
      * Buffer is a persistent (static/global) buffer that won't change
      * for at least the lifetime of the response, MHD should just use
@@ -103,7 +96,7 @@ enum HTTPD_ResponseMemoryMode
      * @ingroup response
      */
     HTTPD_RESPMEM_PERSISTENT,
-    
+
     /**
      * Buffer is heap-allocated with `malloc()` (or equivalent) and
      * should be freed by MHD after processing the response has
@@ -111,7 +104,7 @@ enum HTTPD_ResponseMemoryMode
      * @ingroup response
      */
     HTTPD_RESPMEM_MUST_FREE,
-    
+
     /**
      * Buffer is in transient memory, but not on the heap (for example,
      * on the stack or non-`malloc()` allocated) and only valid during the
@@ -120,7 +113,7 @@ enum HTTPD_ResponseMemoryMode
      * @ingroup response
      */
     HTTPD_RESPMEM_MUST_COPY
-    
+
 };
 
 

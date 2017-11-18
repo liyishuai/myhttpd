@@ -1,11 +1,3 @@
-//
-//  memorypool.h
-//  myhttpd
-//
-//  Created by lastland on 16/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
 #ifndef memorypool_h
 #define memorypool_h
 

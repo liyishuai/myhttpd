@@ -1,11 +1,4 @@
-//
-//  memorypool.c
-//  myhttpd
-//
-//  Created by lastland on 16/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
+#include "macros.h"
 #include "memorypool.h"
 #include <stdlib.h>
 #include <string.h>
@@ -31,10 +24,10 @@ struct MemoryPool {
 
 struct MemoryPool* httpd_pool_create(size_t max) {
     struct MemoryPool* pool;
-    
+
     pool = malloc(sizeof(struct MemoryPool));
     if (NULL == pool) return NULL;
-    
+
     pool->memory = mmap(NULL, max, PROT_READ | PROT_WRITE,
                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (MAP_FAILED == pool->memory || NULL == pool->memory) {
@@ -67,7 +60,7 @@ void* httpd_pool_allocate(struct MemoryPool* pool,
                           size_t size, httpd_status from_end) {
     void* ret;
     size_t asize;
-    
+
     asize = ROUND_TO_ALIGN(size);
     if (0 == asize && 0 != size)
         return NULL;
@@ -87,13 +80,13 @@ void* httpd_pool_reallocate(struct MemoryPool* pool,
                             void* old, size_t old_size, size_t new_size) {
     void* ret;
     size_t asize;
-    
+
     asize = ROUND_TO_ALIGN(new_size);
     if ( (0 == asize) && (0 != new_size) )
         return NULL;
     if ((pool->end < old_size) || (pool->end < asize))
         return NULL;
-    
+
     if ((pool->pos >= old_size) &&
         (&pool->memory[pool->pos - old_size] == old)) {
         if (pool->pos + asize - old_size <= pool->end) {

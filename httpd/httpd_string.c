@@ -1,11 +1,4 @@
-//
-//  string.c
-//  myhttpd
-//
-//  Created by lastland on 01/02/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
+#include "macros.h"
 #include "httpd_string.h"
 
 #define isasciilower(c) (((char)(c)) >= 'a' && ((char)(c)) <= 'z')
@@ -45,7 +38,7 @@ size_t HTTPD_str_to_uint64_ (const char * str, uint64_t * out_val)
     uint64_t res;
     if (!str || !out_val || !isasciidigit(str[0]))
         return 0;
-    
+
     res = 0;
     do
     {
@@ -53,12 +46,12 @@ size_t HTTPD_str_to_uint64_ (const char * str, uint64_t * out_val)
         if ( (res > (UINT64_MAX / 10)) ||
             (res == (UINT64_MAX / 10) && digit > (UINT64_MAX % 10)) )
             return 0;
-        
+
         res *= 10;
         res += digit;
         str++;
     } while (isasciidigit (*str));
-    
+
     *out_val = res;
     return str - start;
 }
@@ -70,7 +63,7 @@ size_t HTTPD_strx_to_sizet_n_ (const char * str, size_t maxlen, size_t * out_val
     int digit;
     if (!str || !out_val)
         return 0;
-    
+
     res = 0;
     i = 0;
     digit = toxdigitvalue(str[i]);
@@ -79,12 +72,12 @@ size_t HTTPD_strx_to_sizet_n_ (const char * str, size_t maxlen, size_t * out_val
         if ( (res > (SIZE_MAX / 16)) ||
             (res == (SIZE_MAX / 16) && digit > (SIZE_MAX % 16)) )
             return 0;
-        
+
         res *= 16;
         res += digit;
         i++;
     }
-    
+
     if (i)
         *out_val = res;
     return i;

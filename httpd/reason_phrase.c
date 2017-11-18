@@ -1,11 +1,4 @@
-//
-//  reason_phrase.c
-//  myhttpd
-//
-//  Created by lastland on 11/02/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
+#include "macros.h"
 #include "httpd.h"
 #include "reason_phrase.h"
 

@@ -1,11 +1,3 @@
-//
-//  connection.h
-//  myhttpd
-//
-//  Created by lastland on 04/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
 #ifndef connection_h
 #define connection_h
 

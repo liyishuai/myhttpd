@@ -1,11 +1,4 @@
-//
-//  response.c
-//  myhttpd
-//
-//  Created by lastland on 11/02/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
+#include "macros.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +11,7 @@ HTTPD_get_response_header (struct httpd_response *response,
                            const char *key)
 {
     struct httpd_HTTP_header *pos;
-    
+
     if (NULL == key)
         return NULL;
     for (pos = response->first_header; NULL != pos; pos = pos->next)
@@ -31,7 +24,7 @@ void
 HTTPD_destroy_response (struct httpd_response *response)
 {
     struct httpd_HTTP_header *pos;
-    
+
     if (NULL == response)
         return;
     // mutex?
@@ -53,7 +46,7 @@ HTTPD_create_response_from_data (size_t size,
 {
     struct httpd_response *response;
     void *tmp;
-    
+
     if ((NULL == data) && (size > 0))
         return NULL;
     if (NULL == (response = malloc (sizeof (struct httpd_response))))
@@ -101,7 +94,7 @@ HTTPD_create_response_from_callback (uint64_t size,
                                      HTTPD_ContentReaderFreeCallback crfc)
 {
     struct httpd_response *response;
-    
+
     if ((NULL == crc) || (0 == block_size))
         return NULL;
     if (NULL == (response = malloc (sizeof (struct httpd_response) + block_size)))

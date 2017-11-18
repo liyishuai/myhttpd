@@ -1,2 +1,7 @@
 DerivedData
 *.o
+CMakeCache.txt
+CMakeFiles/
+Makefile
+bin/
+*.cmake

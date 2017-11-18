@@ -1,13 +1,6 @@
-//
-//  connection.c
-//  myhttpd
-//
-//  Created by lastland on 04/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
+#include "macros.h"
 #include <errno.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -27,7 +20,7 @@
 static httpd_status try_grow_read_buffer(struct httpd_connection* conn) {
     void* buf;
     size_t new_size;
-    
+
     if (0 == conn->read_buffer_size)
         new_size = conn->daemon->pool_size / 2;
     else
@@ -45,7 +38,7 @@ static char* get_next_header_line(struct httpd_connection* conn,
                                   size_t* line_len) {
     char* rbuf;
     size_t pos;
-    
+
     if (0 == conn->read_buffer_offset)
         return NULL;
     pos = 0;
@@ -65,7 +58,7 @@ static char* get_next_header_line(struct httpd_connection* conn,
             *line_len = 0;
         return NULL;
     }
-    
+
     if (line_len)
         *line_len = pos;
     if (('\r' == rbuf[pos]) && ('\n' == rbuf[pos + 1])) {
@@ -84,7 +77,7 @@ const char* httpd_lookup_connection_value(struct httpd_connection* conn,
                                           enum HTTPD_ValueKind kind,
                                           const char* key) {
     struct httpd_HTTP_header* pos;
-    
+
     if (NULL == conn)
         return NULL;
     for (pos = conn->headers_received; NULL != pos; pos = pos->next) {
@@ -112,7 +105,7 @@ static httpd_status socket_start_no_buffering(struct httpd_connection* conn) {
 
 static httpd_status socket_start_normal_buffering(struct httpd_connection* conn) {
     int ret = 1;
-    const int off_val = 1;
+    const int off_val = 0;
     if (NULL == conn) return HTTPD_NO;
     ret = setsockopt(conn->socket, IPPROTO_TCP, TCP_NODELAY,
                      (const void*)&off_val, sizeof(off_val));
@@ -125,10 +118,10 @@ static httpd_status socket_start_normal_buffering(struct httpd_connection* conn)
 static int need_100_continue(struct httpd_connection* conn) {
     const char* expect;
     int ret;
-    
+
     if (NULL != conn->response) return 0;
     if (NULL == conn->version) return 0;
-    
+
     ret = HTTPD_str_equal_caseless_(conn->version,
                                     HTTPD_HTTP_VERSION_1_1);
     if (0 == ret) return 0;
@@ -143,7 +136,7 @@ static int need_100_continue(struct httpd_connection* conn) {
 
 static void close_connection(struct httpd_connection* conn) {
     struct httpd_daemon* daemon;
-    
+
     daemon = conn->daemon;
     conn->state = HTTPD_CONNECTION_CLOSED;
     conn->event_loop_info = HTTPD_EVENT_LOOP_INFO_CLEANUP;
@@ -153,7 +146,7 @@ static void close_connection(struct httpd_connection* conn) {
 static httpd_status keepalive_possible (struct httpd_connection *conn)
 {
     const char *end;
-    
+
     if (NULL == conn->version)
         return HTTPD_NO;
     // TODO: http 1.0?
@@ -187,13 +180,13 @@ static httpd_status parse_initial_message_line(struct httpd_connection* conn,
     char* uri;
     char* args;
     char* http_version;
-    
+
     uri = memchr(line, ' ', line_len);
     if (NULL == uri) return HTTPD_NO;
     uri[0] = '\0';
     conn->method = line;
     uri++;
-    
+
     while (' ' == uri[0] && (size_t)(uri - line) < line_len)
         uri++;
     if (uri - line == line_len) {
@@ -232,7 +225,7 @@ static httpd_status parse_initial_message_line(struct httpd_connection* conn,
 static void call_connection_handler(struct httpd_connection* conn) {
     size_t processed;
     httpd_status ret;
-    
+
     if (NULL != conn->response)
         return;
     processed = 0;
@@ -252,7 +245,7 @@ static httpd_status HTTPD_set_connection_value(struct httpd_connection* conn,
                                                enum HTTPD_ValueKind kind,
                                                const char* key, const char* value) {
     struct httpd_HTTP_header* pos;
-    
+
     pos = httpd_pool_allocate(conn->pool,
                               sizeof(struct httpd_HTTP_header),
                               HTTPD_YES);
@@ -369,7 +362,7 @@ static void parse_connection_headers(struct httpd_connection* conn) {
     const char* clen;
     const char* enc;
     const char* end;
-    
+
     parse_cookie_header(conn);
     // pedantic check
     conn->remaining_upload_size = 0;
@@ -397,7 +390,7 @@ static void parse_connection_headers(struct httpd_connection* conn) {
 static httpd_status process_header_line(struct httpd_connection* conn,
                                         char* line) {
     char* colon;
-    
+
     colon = strchr(line, ':');
     if (NULL == colon) {
         close_connection(conn);
@@ -417,7 +410,7 @@ static httpd_status process_broken_line(struct httpd_connection* conn,
     char* last;
     char* tmp;
     size_t last_len, tmp_len;
-    
+
     last = conn->last;
     if (' ' == line[0] || '\t' == line[0]) {
         last_len = strlen(last);
@@ -465,7 +458,7 @@ static void process_request_body(struct httpd_connection* conn) {
 
     if (NULL != conn->response)
         return;
-    
+
     buffer_head = conn->read_buffer;
     available = conn->read_buffer_offset;
     do {
@@ -608,7 +601,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
     int must_add_keep_alive;
     int must_add_content_length;
     int r;
-    
+
     if (0 == conn->version[0]) {
         data = httpd_pool_allocate (conn->pool, 0, HTTPD_YES);
         conn->write_buffer = data;
@@ -645,7 +638,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
         kind = HTTPD_FOOTER_KIND;
         off = 0;
     }
-    
+
     /* calculate extra headers we need to add, such as 'Connection: close',
      first see what was explicitly requested by the application */
     must_add_close = HTTPD_NO;
@@ -676,10 +669,10 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
                 if (!r)
                     client_requested_close = NULL;
             }
-            
+
             /* now analyze chunked encoding situation */
             conn->have_chunked_uploaded = HTTPD_NO;
-            
+
             if ( (UINT64_MAX == conn->response->total_size) &&
                 (NULL == response_has_close) &&
                 (NULL == client_requested_close) )
@@ -713,14 +706,14 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
                         must_add_close = HTTPD_YES;
                 }
             }
-            
+
             /* check for other reasons to add 'close' header */
             // TODO
-            
+
             /* check if we should add a 'content length' header */
             have_content_length = HTTPD_get_response_header (conn->response,
                                                              HTTP_HEADER_CONTENT_LENGTH);
-            
+
             /* MHD_HTTP_NO_CONTENT, MHD_HTTP_NOT_MODIFIED and 1xx-status
              codes SHOULD NOT have a Content-Length according to spec;
              also chunked encoding / unknown length or CONNECT... */
@@ -744,7 +737,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
                  (which is kind of more sane, because if some crazy
                  application did return content with a 2xx status code,
                  then having a content-length might again be a good idea).
-                 
+
                  Note that the change from 'SHOULD NOT' to 'MUST NOT' is
                  a recent development of the HTTP 1.1 specification.
                  */
@@ -754,7 +747,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
                            (unsigned long long) conn->response->total_size);
                 must_add_content_length = HTTPD_YES;
             }
-            
+
             /* check for adding keep alive */
             if ( (NULL == response_has_keepalive) &&
                 (NULL == response_has_close) &&
@@ -768,7 +761,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
         default:
             break;
     }
-    
+
     if (HTTPD_YES == must_add_close)
         size += strlen ("Connection: close\r\n");
     if (HTTPD_YES == must_add_keep_alive)
@@ -778,7 +771,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
     if (HTTPD_YES == must_add_content_length)
         size += content_length_len;
     // TODO: extra check
-    
+
     for (pos = conn->response->first_header; NULL != pos; pos = pos->next)
         if ( (pos->kind == kind) &&
             (! ( (HTTPD_YES == must_add_close) &&
@@ -845,7 +838,7 @@ static httpd_status build_header_response(struct httpd_connection* conn) {
     }
     memcpy (&data[off], "\r\n", 2);
     off += 2;
-    
+
     if (off != size) {
         exit(1);
         // TODO: panic
@@ -867,7 +860,7 @@ static void cleanup_connection(struct httpd_connection* conn) {
 static httpd_status try_ready_normal_body(struct httpd_connection* conn) {
     ssize_t ret;
     struct httpd_response* response;
-    
+
     response = conn->response;
     if (NULL == response->crc)
         return HTTPD_YES;
@@ -910,7 +903,7 @@ static httpd_status try_ready_chunked_body(struct httpd_connection* conn) {
     size_t size;
     char cbuf[10];                /* 10: max strlen of "%x\r\n" */
     int cblen;
-    
+
     response = conn->response;
     if (0 == conn->write_buffer_size) {
         size = MIN(conn->daemon->pool_size,
@@ -987,13 +980,13 @@ static httpd_status try_ready_chunked_body(struct httpd_connection* conn) {
 
 static httpd_status do_read(struct httpd_connection* conn) {
     ssize_t bytes_read;
-    
+
     if (conn->read_buffer_offset == conn->read_buffer_size)
         return HTTPD_NO;
     bytes_read = conn->recv_cls(conn,
                                 &conn->read_buffer[conn->read_buffer_offset],
                                 conn->read_buffer_size - conn->read_buffer_offset);
-    
+
     if (bytes_read < 0) {
         const int err = errno;
         if (EINTR == err || EAGAIN == err || EWOULDBLOCK == err)
@@ -1016,10 +1009,11 @@ static httpd_status do_read(struct httpd_connection* conn) {
 static httpd_status do_write(struct httpd_connection* conn) {
     ssize_t ret;
     size_t max;
-    
+
     max = conn->write_buffer_append_offset - conn->write_buffer_send_offset;
+    printf("%s\n", conn->write_buffer);
     ret = conn->send_cls(conn, &conn->write_buffer[conn->write_buffer_send_offset], max);
-    
+
     if (ret < 0) {
         const int err = errno;
         if (EINTR == err || EAGAIN == err || EWOULDBLOCK == err)
@@ -1047,7 +1041,7 @@ static int check_write_done(struct httpd_connection* conn,
 
 httpd_status httpd_connection_handle_read(struct httpd_connection* conn) {
     httpd_status r;
-    
+
     if (HTTPD_CONNECTION_CLOSED == conn->state)
         return HTTPD_YES;
     if (conn->read_buffer_offset + conn->daemon->pool_increment >
@@ -1056,7 +1050,7 @@ httpd_status httpd_connection_handle_read(struct httpd_connection* conn) {
     r = do_read(conn);
     if (HTTPD_NO == r)
         return HTTPD_YES;
-    
+
     while (1) {
         switch (conn->state) {
             case HTTPD_CONNECTION_INIT:
@@ -1088,7 +1082,7 @@ httpd_status httpd_connection_handle_read(struct httpd_connection* conn) {
 
 static void HTTPD_connection_update_event_loop_info(struct httpd_connection* conn) {
     httpd_status ret;
-    
+
     while (1) {
         switch (conn->state) {
             case HTTPD_CONNECTION_INIT:
@@ -1195,7 +1189,7 @@ static void HTTPD_connection_update_event_loop_info(struct httpd_connection* con
 httpd_status httpd_connection_handle_write(struct httpd_connection* conn) {
     struct httpd_response* response;
     ssize_t ret;
-    
+
     while (1) {
         switch (conn->state) {
             case HTTPD_CONNECTION_INIT:
@@ -1278,7 +1272,7 @@ httpd_status httpd_connection_handle_write(struct httpd_connection* conn) {
         }
         break;
     }
-    
+
     return HTTPD_YES;
 }
 
@@ -1289,10 +1283,10 @@ httpd_status httpd_connection_handle_idle(struct httpd_connection* conn) {
     httpd_status r;
     const char *end;
     int client_close;
-    
+
     daemon = conn->daemon;
     conn->in_idle = 1;
-    
+
     while (1) {
         switch (conn->state) {
             case HTTPD_CONNECTION_INIT:
@@ -1358,6 +1352,7 @@ httpd_status httpd_connection_handle_idle(struct httpd_connection* conn) {
                 if (HTTPD_CONNECTION_CLOSED == conn->state)
                     continue;
                 conn->state = HTTPD_CONNECTION_HEADERS_PROCESSED;
+                continue;
             case HTTPD_CONNECTION_HEADERS_PROCESSED:
                 call_connection_handler(conn);
                 if (HTTPD_CONNECTION_CLOSED == conn->state)
@@ -1383,6 +1378,7 @@ httpd_status httpd_connection_handle_idle(struct httpd_connection* conn) {
                     conn->state = HTTPD_CONNECTION_FOOTERS_RECEIVED;
                 else
                     conn->state = HTTPD_CONNECTION_CONTINUE_SENT;
+                continue;
             case HTTPD_CONNECTION_CONTINUE_SENDING:
                 if (strlen(HTTP_100_CONTINUE) == conn->continue_message_write_offset) {
                     conn->state = HTTPD_CONNECTION_CONTINUE_SENT;
@@ -1526,7 +1522,7 @@ httpd_status httpd_connection_handle_idle(struct httpd_connection* conn) {
                     conn->state = HTTPD_CONNECTION_CHUNKED_BODY_READY;
                     /* Buffering for flushable socket was already enabled */
                     socket_start_no_buffering (conn);
-                    
+
                     continue;
                 }
                 // crc? mutex?
@@ -1629,7 +1625,7 @@ httpd_status HTTPD_queue_response (struct httpd_connection *conn,
                                    struct httpd_response *response)
 {
     int ret;
-    
+
     if ( (NULL == conn) ||
         (NULL == response) ||
         (NULL != conn->response) ||
@@ -1651,7 +1647,7 @@ httpd_status HTTPD_queue_response (struct httpd_connection *conn,
          have already sent the full message body. */
         conn->response_write_position = response->total_size;
     }
-    
+
     ret = HTTPD_str_equal_caseless_(conn->method,
                                     HTTPD_HTTP_METHOD_POST);
     if ( (HTTPD_CONNECTION_HEADERS_PROCESSED == conn->state) &&

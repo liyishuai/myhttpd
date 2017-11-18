@@ -1,13 +1,5 @@
-//
-//  daemon.c
-//  myhttpd
-//
-//  Created by lastland on 03/01/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "macros.h"
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -37,14 +29,14 @@ static httpd_status make_noninheritable(httpd_socket socket) {
     if (-1 == flags) {
         return HTTPD_NO;
     }
-    
+
     if (flags != (flags | FD_CLOEXEC)) {
         r = fcntl(socket, F_SETFD, flags | FD_CLOEXEC);
     }
     if (r != 0) {
         return HTTPD_NO;
     }
-    
+
     return HTTPD_YES;
 }
 
@@ -54,14 +46,14 @@ static httpd_status make_nonblocking(httpd_socket socket) {
     if (-1 == flags) {
         return HTTPD_NO;
     }
-    
+
     if (flags != (flags | O_NONBLOCK)) {
         r = fcntl(socket, F_SETFL, flags | O_NONBLOCK);
     }
     if (r != 0) {
         return HTTPD_NO;
     }
-    
+
     return HTTPD_YES;
 }
 
@@ -73,34 +65,34 @@ static void make_nonblocking_noninheritable(httpd_socket socket) {
 static ssize_t recv_param_adapter(struct httpd_connection* conn,
                                   void* other, size_t i) {
     ssize_t ret;
-    
+
     if (INVALID_SOCKET == conn->socket ||
         HTTPD_CONNECTION_CLOSED == conn->state) {
         errno = ENOTCONN;
         return -1;
     }
-    if (i > SSIZE_MAX)
-        i = SSIZE_MAX;
-    
+    if (i > UINT_MAX)
+        i = UINT_MAX;
+
     ret = recv(conn->socket, other, i, MSG_NOSIGNAL);
-    
+
     return ret;
 }
 
 static ssize_t send_param_adapter(struct httpd_connection* conn,
                                   const void* other, size_t i) {
     ssize_t ret;
-    
+
     if (INVALID_SOCKET == conn->socket ||
         HTTPD_CONNECTION_CLOSED == conn->state) {
         errno = ENOTCONN;
         return -1;
     }
-    if (i > SSIZE_MAX)
-        i = SSIZE_MAX;
-    
+    if (i > UINT_MAX)
+        i = UINT_MAX;
+
     ret = send(conn->socket, other, i, MSG_NOSIGNAL);
-    
+
     /* Handle broken kernel / libc, returning -1 but not setting errno;
      kill connection as that should be safe; reported on mailinglist here:
      http://lists.gnu.org/archive/html/libmicrohttpd/2014-10/msg00023.html */
@@ -146,20 +138,20 @@ static httpd_status httpd_get_fdset2(struct httpd_daemon* daemon,
     httpd_status r, result;
     struct httpd_connection* pos;
     result = HTTPD_YES;
-    
+
     if (NULL == daemon ||
         NULL == read_fd_set ||
         NULL == write_fd_set ||
         HTTPD_YES == daemon->shutdown) {
         return HTTPD_NO;
     }
-    
+
     if (INVALID_SOCKET != daemon->socket) {
         r = add_to_fd_set(daemon->socket, read_fd_set, max_fd, fd_setsize);
         if (HTTPD_YES != r)
             result = HTTPD_NO;
     }
-    
+
     for (pos = daemon->connections_head; NULL != pos; pos = pos->next) {
         switch (pos->event_loop_info) {
             case HTTPD_EVENT_LOOP_INFO_READ:
@@ -188,7 +180,7 @@ static httpd_status httpd_get_fdset2(struct httpd_daemon* daemon,
                 break;
         }
     }
-    
+
     return result;
 }
 
@@ -199,13 +191,13 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
                                             int external_add) {
     struct httpd_connection* connection;
     static int on = 1;
-    
+
     if (client_socket >= FD_SETSIZE) {
         close(client_socket);
         errno = EINVAL;
         return HTTPD_NO;
     }
-    
+
     /*
     if (daemon->connections == daemon->connection_limit) {
         close(client_socket);
@@ -213,11 +205,11 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
         return HTTPD_NO;
     }
      */
-    
+
 #ifdef __APPLE__
     setsockopt(client_socket, SOL_SOCKET, SO_NOSIGPIPE, &on, sizeof(on));
 #endif
-    
+
     connection = malloc(sizeof(struct httpd_connection));
     if (NULL == connection) {
         int eno = errno;
@@ -226,16 +218,16 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
         return HTTPD_NO;
     }
     memset(connection, 0, sizeof(struct httpd_connection));
-    
+
     connection->pool = httpd_pool_create(daemon->pool_size);
     if (NULL == connection->pool) {
         close(client_socket);
         errno = ENOMEM;
         return HTTPD_NO;
     }
-    
+
     // TODO: connection timeout
-    
+
     connection->addr = malloc(addrlen);
     if (NULL == connection->addr) {
         int eno = errno;
@@ -244,19 +236,19 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
         errno = eno;
         return HTTPD_NO;
     }
-    
+
     memcpy(connection->addr, addr, addrlen);
     connection->addr_len = addrlen;
     connection->socket = client_socket;
     connection->daemon = daemon;
-    
+
     connection->read_handler = &httpd_connection_handle_read;
     connection->write_handler = &httpd_connection_handle_write;
     connection->idle_handler = &httpd_connection_handle_idle;
     connection->recv_cls = &recv_param_adapter;
     connection->send_cls = &send_param_adapter;
 
-    
+
     connection->next = daemon->connections_head;
     connection->prev = NULL;
     if (NULL == daemon->connections_tail)
@@ -264,9 +256,9 @@ static httpd_status internal_add_connection(struct httpd_daemon* daemon,
     else
         daemon->connections_head->prev = connection;
     daemon->connections_head = connection;
-    
+
     // TODO: external_add is yes
-    
+
     daemon->connections++;
     return HTTPD_YES;
 }
@@ -277,7 +269,7 @@ static httpd_status accept_connection(struct httpd_daemon* daemon) {
     socklen_t addrlen;
     httpd_socket s;
     httpd_socket fd;
-    
+
     addr = (struct sockaddr*)&sock_addr;
     addrlen = sizeof(sock_addr);
     memset(addr, 0, addrlen);
@@ -306,7 +298,7 @@ static httpd_status accept_connection(struct httpd_daemon* daemon) {
     }
     make_nonblocking_noninheritable(s);
     internal_add_connection(daemon, s, addr, addrlen, HTTPD_NO);
-    
+
     return HTTPD_YES;
 }
 
@@ -315,7 +307,7 @@ static httpd_status call_handlers(struct httpd_connection* conn,
                                   int write_ready,
                                   httpd_status force_close) {
     httpd_status had_response_before_idle, r;
-    
+
     if (read_ready)
         conn->read_handler(conn);
     if (write_ready)
@@ -338,9 +330,9 @@ static httpd_status run_from_select(struct httpd_daemon* daemon,
     httpd_socket ds;
     struct httpd_connection *pos;
     struct httpd_connection *next;
-    
+
     // TODO: drain a pipe?
-    
+
     ds = daemon->socket;
     if (INVALID_SOCKET != ds && FD_ISSET(ds, rs)) {
         accept_connection(daemon);
@@ -370,28 +362,28 @@ static httpd_status httpd_select(struct httpd_daemon* daemon,
     struct timeval* tv;
     int r;
     httpd_status err_state;
-    
+
     if (HTTPD_YES == daemon->shutdown) {
         return HTTPD_NO;
     }
-    
+
     maxsock = INVALID_SOCKET;
     FD_ZERO(&rs);
     FD_ZERO(&ws);
     FD_ZERO(&es);
-    
+
     r = httpd_get_fdset2(daemon, &rs, &ws, &es, &maxsock, FD_SETSIZE);
     if (HTTPD_NO == r) {
         err_state = HTTPD_YES;
     }
-    
+
     if (INVALID_SOCKET != daemon->socket) {
         if (daemon->connections == daemon->connection_limit &&
             daemon->at_limit) {
             FD_CLR(daemon->socket, &rs);
         }
     }
-    
+
     if (HTTPD_YES == err_state)
         mayblock = HTTPD_NO;
 
@@ -405,7 +397,7 @@ static httpd_status httpd_select(struct httpd_daemon* daemon,
     }
     tv = &timeout;
     num_ready = select(maxsock + 1, &rs, &ws, &es, tv);
-    
+
     if (HTTPD_YES == daemon->shutdown)
         return HTTPD_NO;
     if (num_ready < 0) {
@@ -414,7 +406,7 @@ static httpd_status httpd_select(struct httpd_daemon* daemon,
         else
             return HTTPD_YES;
     }
-    
+
     r = run_from_select(daemon, &rs, &ws, &es);
     if (HTTPD_YES == r) {
         if (HTTPD_YES == err_state)
@@ -441,9 +433,9 @@ httpd_socket create_listen_socket(struct httpd_daemon* daemon) {
     if (INVALID_SOCKET == fd) {
         return INVALID_SOCKET;
     }
-    
+
     make_noninheritable(fd);
-    
+
     return fd;
 }
 
@@ -457,7 +449,7 @@ struct httpd_daemon* create_daemon(uint16_t port,
     struct sockaddr* servaddr;
     socklen_t addr_len;
     int r;
-    
+
     /* initialize daemon */
     daemon = malloc(sizeof(struct httpd_daemon));
     memset(daemon, 0, sizeof(struct httpd_daemon));
@@ -471,7 +463,7 @@ struct httpd_daemon* create_daemon(uint16_t port,
     /* create a socket */
     socket_fd = create_listen_socket(daemon);
     daemon->socket = socket_fd;
-    
+
     /* bind the socket to the given port */
     memset(&socket_addr, 0, sizeof(httpd_sockaddr));
     addr_len = sizeof(httpd_sockaddr);
@@ -481,7 +473,7 @@ struct httpd_daemon* create_daemon(uint16_t port,
     socket_addr.sin_len = addr_len;
 #endif
     servaddr = (struct sockaddr*) &socket_addr;
-    
+
     r = bind(socket_fd, servaddr, addr_len);
     if (-1 == r) {
 #ifdef DEBUG
@@ -489,7 +481,7 @@ struct httpd_daemon* create_daemon(uint16_t port,
 #endif
         goto free_and_fail;
     }
-    
+
     /* start listening */
     r = listen(socket_fd, SOMAXCONN);
     if (-1 == r) {
@@ -499,25 +491,25 @@ struct httpd_daemon* create_daemon(uint16_t port,
         goto free_and_fail;
     }
     make_nonblocking(socket_fd);
-    
+
     r = create_thread(&daemon->pid, daemon, select_thread, daemon);
-    
+
     return daemon;
-    
+
 free_and_fail:
     free(daemon);
     return NULL;
 }
 
 void stop_daemon(struct httpd_daemon* daemon) {
-    //int fd;
-    
+    int fd;
+
     if (NULL == daemon)
         return;
-    
+
     daemon->shutdown = HTTPD_YES;
-    //fd = daemon->socket;
-    daemon->socket = INVALID_SOCKET;
+    fd = daemon->socket;
+    shutdown(fd, SHUT_RDWR);
     // TODO: worker pool?
     pthread_join(daemon->pid, NULL);
     // TODO: close all connections

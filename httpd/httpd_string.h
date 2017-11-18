@@ -1,11 +1,3 @@
-//
-//  string.h
-//  myhttpd
-//
-//  Created by lastland on 01/02/2017.
-//  Copyright © 2017 DeepSpec. All rights reserved.
-//
-
 #ifndef httpd_string_h
 #define httpd_string_h
 
